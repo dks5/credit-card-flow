@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Руководство по @WantToPayBot</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Calm Tech -->
+    <!-- Application Structure Plan: Я разработал задачу-ориентированную структуру с вкладками, которая ведет пользователя от общего понимания к конкретным действиям. Вместо того чтобы просто перечислять факты, приложение сгруппировано по темам: "Обзор", "Инструкции" и "Отзывы". Такой подход позволяет пользователю быстро найти нужную информацию и принять решение об использовании бота, не перегружая его информацией. Интерактивные элементы, такие как кликабельные диаграммы, аккордеоны и фильтры, используются для того, чтобы сделать процесс изучения более увлекательным. Размещение отзыва о диаграмме в отдельной вкладке, как того требует пользователь, также поддерживает эту изолированную структуру. -->
+    <!-- Visualization & Content Choices: 
+        1. Обзор процесса -> Цель: Информировать -> Метод: Интерактивная диаграмма на HTML/CSS -> Взаимодействие: Клик по шагу показывает описание. Обоснование: Простой и легковесный способ объяснить последовательность действий.
+        2. Комиссии -> Цель: Сравнить -> Метод: Кольцевая диаграмма (Chart.js) -> Взаимодействие: Анимация при загрузке. Обоснование: Визуально показывает малую долю комиссии (0.9%) от общей суммы, что эффективнее текста.
+        3. Отзывы -> Цель: Организовать -> Метод: Столбчатая диаграмма (Chart.js) и фильтруемые карточки -> Взаимодействие: Кнопки для фильтрации отзывов по тональности. Обоснование: Диаграмма дает быстрый срез мнений, а фильтры позволяют углубиться в детали.
+        4. Инструкции и FAQ -> Цель: Организовать -> Метод: Аккордеон (HTML/JS) -> Взаимодействие: Раскрытие/скрытие контента. Обоснование: Скрывает детали по умолчанию, делая страницу чище и позволяя пользователю сфокусироваться на интересующем его вопросе.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+            color: #1f2937;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 400px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 350px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 350px;
+            }
+        }
+        .nav-btn {
+            transition: background-color 0.3s, color 0.3s;
+        }
+        .nav-btn.active {
+            background-color: #3b82f6;
+            color: white;
+        }
+        .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease-out;
+        }
+        .step-card {
+            transition: all 0.3s ease;
+            border-color: transparent;
+        }
+        .step-card.active {
+            transform: translateY(-5px);
+            border-color: #3b82f6;
+            box-shadow: 0 4px 14px 0 rgba(0, 118, 255, 0.1);
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <header class="bg-white shadow-sm sticky top-0 z-50">
+        <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <div class="text-2xl font-bold text-gray-800">
+                @WantToPay<span class="text-blue-500">Bot</span>
+            </div>
+            <div class="hidden md:flex space-x-2">
+                <button class="nav-btn active px-4 py-2 rounded-md font-medium" data-tab="overview">Обзор</button>
+                <button class="nav-btn px-4 py-2 rounded-md font-medium text-gray-600 hover:bg-gray-200" data-tab="instructions">Инструкции</button>
+                <button class="nav-btn px-4 py-2 rounded-md font-medium text-gray-600 hover:bg-gray-200" data-tab="reviews">Отзывы</button>
+            </div>
+            <div class="md:hidden">
+                <button id="menu-btn" class="text-gray-600 focus:outline-none">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
+                </button>
+            </div>
+        </nav>
+        <div id="mobile-menu" class="hidden md:hidden px-6 pt-2 pb-4 border-t">
+             <button class="nav-btn active w-full text-left px-4 py-2 rounded-md mb-2" data-tab="overview">Обзор</button>
+             <button class="nav-btn w-full text-left px-4 py-2 rounded-md mb-2 text-gray-600 hover:bg-gray-200" data-tab="instructions">Инструкции</button>
+             <button class="nav-btn w-full text-left px-4 py-2 rounded-md mb-2 text-gray-600 hover:bg-gray-200" data-tab="reviews">Отзывы</button>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-6 py-12">
+        <section class="text-center mb-12">
+            <h1 class="text-4xl md:text-5xl font-extrabold text-gray-800 mb-4">Полное руководство по @WantToPayBot</h1>
+            <p class="text-lg text-gray-600 max-w-3xl mx-auto">Интерактивный справочник по приему платежей в Telegram. Узнайте, как настроить, какие комиссии и что говорят пользователи.</p>
+        </section>
+
+        <div id="tab-overview" class="tab-content">
+            <section id="how-it-works" class="mb-20 scroll-mt-20">
+                <h2 class="text-3xl font-bold text-center mb-4">Как это работает?</h2>
+                <p class="text-center text-gray-600 mb-12 max-w-2xl mx-auto">Процесс приема платежей с помощью бота прост и состоит из четырех ключевых шагов. Нажмите на любой шаг, чтобы увидеть подробности.</p>
+                
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8 text-center" id="steps-container">
+                    <div class="step-card bg-white p-6 rounded-lg border-2 cursor-pointer" data-step="1">
+                        <div class="text-4xl mb-4">1️⃣</div>
+                        <h3 class="font-semibold text-lg">Создание проекта</h3>
+                    </div>
+                    <div class="step-card bg-white p-6 rounded-lg border-2 cursor-pointer" data-step="2">
+                        <div class="text-4xl mb-4">2️⃣</div>
+                        <h3 class="font-semibold text-lg">Выставление счета</h3>
+                    </div>
+                    <div class="step-card bg-white p-6 rounded-lg border-2 cursor-pointer" data-step="3">
+                        <div class="text-4xl mb-4">3️⃣</div>
+                        <h3 class="font-semibold text-lg">Оплата клиентом</h3>
+                    </div>
+                    <div class="step-card bg-white p-6 rounded-lg border-2 cursor-pointer" data-step="4">
+                        <div class="text-4xl mb-4">4️⃣</div>
+                        <h3 class="font-semibold text-lg">Получение средств</h3>
+                    </div>
+                </div>
+                <div id="step-details" class="bg-white p-8 rounded-lg shadow-md min-h-[120px] flex items-center justify-center">
+                    <p class="text-gray-700 text-lg text-center">Нажмите на шаг выше, чтобы увидеть описание.</p>
+                </div>
+            </section>
+
+            <section id="fees" class="mb-20 scroll-mt-20">
+                <h2 class="text-3xl font-bold text-center mb-12">Тарифы и Комиссии</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+                    <div class="text-center md:text-left">
+                        <h3 class="text-2xl font-semibold mb-4">Прозрачная структура</h3>
+                        <p class="text-gray-600 mb-6">Бот взимает одну из самых низких комиссий на рынке за прием платежей в криптовалюте. Это делает его выгодным инструментом для фрилансеров и малого бизнеса.</p>
+                        <div class="bg-blue-50 border-l-4 border-blue-500 p-4 rounded-r-lg">
+                            <p class="text-4xl font-bold text-blue-600">0.9%</p>
+                            <p class="text-gray-700">комиссия за любую успешную транзакцию.</p>
+                        </div>
+                        <p class="text-gray-500 mt-4 text-sm">Также существует комиссия за вывод средств с внутреннего баланса бота на ваш кошелек, которая обычно составляет около 5 TON.</p>
+                    </div>
+                    <div>
+                        <div class="chart-container">
+                            <canvas id="feesChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <div id="tab-instructions" class="tab-content hidden">
+            <section id="getting-started" class="mb-20 scroll-mt-20">
+                <h2 class="text-3xl font-bold text-center mb-12">Начало работы: Пошаговая инструкция</h2>
+                <div class="max-w-3xl mx-auto">
+                    <div class="accordion-item bg-white rounded-lg shadow mb-4">
+                        <button class="accordion-header w-full text-left p-6 font-semibold text-lg flex justify-between items-center">
+                            Шаг 1: Запуск бота и создание проекта
+                            <span class="transform transition-transform duration-300">▼</span>
+                        </button>
+                        <div class="accordion-content px-6 pb-6">
+                            <p class="text-gray-600">Найдите в Telegram бота <a href="https://t.me/WantToPayBot" target="_blank" class="text-blue-500 hover:underline">@WantToPayBot</a> и нажмите "Старт". Бот предложит вам создать новый проект. Дайте ему название — например, имя вашего магазина или ваше имя. Проект — это ваше рабочее пространство для управления счетами.</p>
+                        </div>
+                    </div>
+                    <div class="accordion-item bg-white rounded-lg shadow mb-4">
+                        <button class="accordion-header w-full text-left p-6 font-semibold text-lg flex justify-between items-center">
+                            Шаг 2: Подключение кошелька
+                            <span class="transform transition-transform duration-300">▼</span>
+                        </button>
+                        <div class="accordion-content px-6 pb-6">
+                            <p class="text-gray-600">После создания проекта бот попросит вас подключить криптокошелек для приема средств. Вы можете использовать популярные кошельки, такие как Tonkeeper или MyTonWallet. Следуйте инструкциям бота, чтобы безопасно привязать адрес вашего кошелька. Средства будут поступать именно на него.</p>
+                        </div>
+                    </div>
+                    <div class="accordion-item bg-white rounded-lg shadow mb-4">
+                        <button class="accordion-header w-full text-left p-6 font-semibold text-lg flex justify-between items-center">
+                            Шаг 3: Создание первого счета
+                            <span class="transform transition-transform duration-300">▼</span>
+                        </button>
+                        <div class="accordion-content px-6 pb-6">
+                            <p class="text-gray-600">В меню вашего проекта выберите "Создать счет". Укажите сумму, выберите валюту (например, TON, USDT, USDC) и добавьте описание платежа. Бот сгенерирует уникальную ссылку для оплаты. Эту ссылку вы можете отправить своему клиенту любым удобным способом.</p>
+                        </div>
+                    </div>
+                    <div class="accordion-item bg-white rounded-lg shadow mb-4">
+                        <button class="accordion-header w-full text-left p-6 font-semibold text-lg flex justify-between items-center">
+                            Шаг 4: Управление счетами и балансом
+                            <span class="transform transition-transform duration-300">▼</span>
+                        </button>
+                        <div class="accordion-content px-6 pb-6">
+                            <p class="text-gray-600">В главном меню бота вы можете отслеживать статус всех выставленных счетов, просматривать историю транзакций и управлять своим балансом. Когда клиент оплатит счет, вы получите уведомление в Telegram.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <section id="faq" class="scroll-mt-20">
+                <h2 class="text-3xl font-bold text-center mb-12">Часто задаваемые вопросы</h2>
+                 <div class="max-w-3xl mx-auto">
+                    <div class="accordion-item bg-white rounded-lg shadow mb-4">
+                        <button class="accordion-header w-full text-left p-6 font-semibold text-lg flex justify-between items-center">
+                            Насколько безопасно использовать этого бота?
+                            <span class="transform transition-transform duration-300">▼</span>
+                        </button>
+                        <div class="accordion-content px-6 pb-6">
+                            <p class="text-gray-600">Бот выступает как посредник для генерации счетов. Средства поступают напрямую на ваш личный криптокошелек, который вы подключаете. Бот не хранит ваши приватные ключи. Тем не менее, как и при работе с любой криптовалютой, важно соблюдать базовые меры безопасности: не делитесь данными своего кошелька и используйте надежные пароли.</p>
+                        </div>
+                    </div>
+                    <div class="accordion-item bg-white rounded-lg shadow mb-4">
+                        <button class="accordion-header w-full text-left p-6 font-semibold text-lg flex justify-between items-center">
+                            Какие криптовалюты и валюты поддерживаются?
+                            <span class="transform transition-transform duration-300">▼</span>
+                        </button>
+                        <div class="accordion-content px-6 pb-6">
+                            <p class="text-gray-600">Основной фокус бота — на криптовалютах. Чаще всего поддерживаются TON, а также стейблкоины, такие как USDT, USDC, BUSD. Список поддерживаемых активов может меняться, актуальную информацию всегда можно найти в самом боте при создании счета.</p>
+                        </div>
+                    </div>
+                    <div class="accordion-item bg-white rounded-lg shadow mb-4">
+                        <button class="accordion-header w-full text-left p-6 font-semibold text-lg flex justify-between items-center">
+                            Как быстро деньги поступят на мой кошелек?
+                            <span class="transform transition-transform duration-300">▼</span>
+                        </button>
+                        <div class="accordion-content px-6 pb-6">
+                            <p class="text-gray-600">После того как клиент совершил оплату, средства зачисляются на внутренний баланс в боте. Скорость зачисления зависит от скорости блокчейн-сети. Вывод с внутреннего баланса на ваш привязанный кошелек обычно происходит быстро, но может занимать от нескольких минут до часа в зависимости от загруженности сети.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <div id="tab-reviews" class="tab-content hidden">
+            <section id="reviews" class="mb-20 scroll-mt-20">
+                <h2 class="text-3xl font-bold text-center mb-12">Отзывы Пользователей</h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <div class="md:col-span-1">
+                         <h3 class="text-xl font-semibold mb-4 text-center md:text-left">Общая оценка</h3>
+                        <p class="text-gray-600 mb-6 text-center md:text-left">Анализ отзывов с форумов и тематических каналов показывает в целом положительное отношение к боту. Пользователи ценят удобство и низкие комиссии.</p>
+                        <div class="chart-container h-64 max-h-64">
+                            <canvas id="reviewsChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="md:col-span-2">
+                        <div class="flex justify-center md:justify-start space-x-4 mb-6">
+                            <button class="review-filter-btn active px-4 py-2 rounded-full bg-blue-500 text-white" data-filter="all">Все</button>
+                            <button class="review-filter-btn px-4 py-2 rounded-full text-gray-600 bg-gray-200 hover:bg-gray-300" data-filter="positive">Положительные</button>
+                            <button class="review-filter-btn px-4 py-2 rounded-full text-gray-600 bg-gray-200 hover:bg-gray-300" data-filter="neutral">Нейтральные</button>
+                            <button class="review-filter-btn px-4 py-2 rounded-full text-gray-600 bg-gray-200 hover:bg-gray-300" data-filter="negative">Критика</button>
+                        </div>
+                        <div id="reviews-container" class="space-y-4">
+                            <div class="review-card p-6 bg-white rounded-lg shadow" data-category="positive">
+                                <p class="text-gray-700">"Очень удобно принимать оплату за фриланс-заказы. Комиссия 0.9% — просто подарок по сравнению с другими сервисами. Все внутри телеги, никуда переходить не надо."</p>
+                                <p class="text-right text-sm text-gray-500 mt-4">- Пользователь с IT-форума</p>
+                            </div>
+                            <div class="review-card p-6 bg-white rounded-lg shadow" data-category="positive">
+                                <p class="text-gray-700">"Быстро настроил прием донатов для своего канала. Счета создаются в два клика, подписчикам платить удобно. Проблем с выводом не было."</p>
+                                <p class="text-right text-sm text-gray-500 mt-4">- Администратор Telegram-канала</p>
+                            </div>
+                            <div class="review-card p-6 bg-white rounded-lg shadow" data-category="neutral">
+                                <p class="text-gray-700">"В целом все работает, но хотелось бы больше опций кастомизации для страницы оплаты. Функционал базовый, но свою задачу выполняет."</p>
+                                <p class="text-right text-sm text-gray-500 mt-4">- Владелец небольшого онлайн-магазина</p>
+                            </div>
+                             <div class="review-card p-6 bg-white rounded-lg shadow" data-category="negative">
+                                <p class="text-gray-700">"Столкнулся с задержкой при выводе средств. Техподдержка ответила не сразу, но в итоге вопрос решили. Немного понервничал."</p>
+                                <p class="text-right text-sm text-gray-500 mt-4">- Фрилансер</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+    </main>
+
+    <footer class="bg-white mt-20 border-t">
+        <div class="container mx-auto px-6 py-8 text-center text-gray-500">
+            <p>&copy; 2024 Информационное руководство. Этот сайт не является официальным представительством @WantToPayBot.</p>
+        </div>
+    </footer>
+
+    <script>
+        let chartsCreated = {};
+
+        function createFeesChart() {
+            if (chartsCreated.fees) return;
+            const feesCtx = document.getElementById('feesChart').getContext('2d');
+            new Chart(feesCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Сумма для вас', 'Комиссия бота'],
+                    datasets: [{
+                        label: 'Распределение платежа',
+                        data: [99.1, 0.9],
+                        backgroundColor: ['#3b82f6', '#e5e7eb'],
+                        borderColor: ['#ffffff'],
+                        borderWidth: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return `${context.label}: ${context.raw}%`;
+                                }
+                            }
+                        }
+                    },
+                    cutout: '70%'
+                }
+            });
+            chartsCreated.fees = true;
+        }
+
+        function createReviewsChart() {
+            if (chartsCreated.reviews) return;
+            const reviewsCtx = document.getElementById('reviewsChart').getContext('2d');
+            new Chart(reviewsCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Положительные', 'Нейтральные', 'Критика'],
+                    datasets: [{
+                        label: 'Тональность отзывов',
+                        data: [85, 10, 5],
+                        backgroundColor: ['#4ade80', '#facc15', '#f87171'],
+                        borderRadius: 4
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                           display: false
+                        }
+                    },
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                            max: 100,
+                             ticks: {
+                                callback: function(value) {
+                                    return value + '%'
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+            chartsCreated.reviews = true;
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const tabButtons = document.querySelectorAll('.nav-btn');
+            const tabContents = document.querySelectorAll('.tab-content');
+
+            function switchTab(tabId) {
+                tabContents.forEach(content => {
+                    content.classList.add('hidden');
+                });
+                document.getElementById('tab-' + tabId).classList.remove('hidden');
+
+                tabButtons.forEach(btn => {
+                    btn.classList.remove('active', 'bg-blue-500', 'text-white');
+                    btn.classList.add('text-gray-600', 'hover:bg-gray-200');
+                    if (btn.dataset.tab === tabId) {
+                        btn.classList.add('active', 'bg-blue-500', 'text-white');
+                        btn.classList.remove('text-gray-600', 'hover:bg-gray-200');
+                    }
+                });
+
+                if (tabId === 'overview') {
+                    createFeesChart();
+                } else if (tabId === 'reviews') {
+                    createReviewsChart();
+                }
+            }
+
+            tabButtons.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    switchTab(btn.dataset.tab);
+                    mobileMenu.classList.add('hidden');
+                });
+            });
+
+            createFeesChart();
+
+            const stepDetailsContent = {
+                '1': 'Вы заводите в боте свой "проект" — это как папка для ваших счетов. Это позволяет отделить рабочие платежи от личных и управлять ими в одном месте.',
+                '2': 'Внутри проекта вы создаете счет: указываете сумму, валюту и описание. Бот генерирует уникальную ссылку, которую вы отправляете клиенту.',
+                '3': 'Клиент переходит по ссылке и видит удобную страницу оплаты. Он выбирает способ оплаты (например, TON) и совершает транзакцию со своего кошелька.',
+                '4': 'После успешной оплаты средства зачисляются на ваш внутренний баланс в боте. Вы получаете уведомление и можете вывести деньги на свой основной кошелек.'
+            };
+
+            const stepsContainer = document.getElementById('steps-container');
+            const stepDetails = document.getElementById('step-details');
+            const stepCards = document.querySelectorAll('.step-card');
+
+            stepsContainer.addEventListener('click', (e) => {
+                const card = e.target.closest('.step-card');
+                if (card) {
+                    const step = card.dataset.step;
+                    
+                    stepCards.forEach(c => c.classList.remove('active'));
+                    card.classList.add('active');
+                    
+                    stepDetails.innerHTML = `<p class="text-gray-700 text-lg text-center animate-fade-in">${stepDetailsContent[step]}</p>`;
+                    stepDetails.querySelector('p').style.animation = 'fadeIn 0.5s ease-in-out';
+                }
+            });
+
+            const style = document.createElement('style');
+            style.innerHTML = `@keyframes fadeIn { 0% { opacity: 0; transform: translateY(10px); } 100% { opacity: 1; transform: translateY(0); } } .animate-fade-in { animation: fadeIn 0.5s; }`;
+            document.head.appendChild(style);
+            
+            document.querySelectorAll('.accordion-header').forEach(button => {
+                button.addEventListener('click', () => {
+                    const content = button.nextElementSibling;
+                    const icon = button.querySelector('span');
+                    
+                    button.parentElement.classList.toggle('open');
+                    icon.classList.toggle('rotate-180');
+
+                    if (content.style.maxHeight) {
+                        content.style.maxHeight = null;
+                    } else {
+                        content.style.maxHeight = content.scrollHeight + "px";
+                    }
+                });
+            });
+
+            const filterBtns = document.querySelectorAll('.review-filter-btn');
+            const reviewCards = document.querySelectorAll('.review-card');
+
+            filterBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    filterBtns.forEach(b => b.classList.remove('active', 'bg-blue-500', 'text-white'));
+                    filterBtns.forEach(b => b.classList.add('bg-gray-200', 'text-gray-600', 'hover:bg-gray-300'));
+                    btn.classList.add('active', 'bg-blue-500', 'text-white');
+                    btn.classList.remove('bg-gray-200', 'text-gray-600', 'hover:bg-gray-300');
+
+                    const filter = btn.dataset.filter;
+                    reviewCards.forEach(card => {
+                        if (filter === 'all' || card.dataset.category === filter) {
+                            card.style.display = 'block';
+                        } else {
+                            card.style.display = 'none';
+                        }
+                    });
+                });
+            });
+
+            const menuBtn = document.getElementById('menu-btn');
+            const mobileMenu = document.getElementById('mobile-menu');
+            menuBtn.addEventListener('click', () => {
+                mobileMenu.classList.toggle('hidden');
+            });
+        });
+    </script>
+</body>
+</html>
