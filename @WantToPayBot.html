@@ -10,14 +10,6 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <!-- Chosen Palette: Calm Tech -->
-    <!-- Application Structure Plan: Я разработал задачу-ориентированную структуру с вкладками, которая ведет пользователя от общего понимания к конкретным действиям. Вместо того чтобы просто перечислять факты, приложение сгруппировано по темам: "Обзор", "Инструкции" и "Отзывы". Такой подход позволяет пользователю быстро найти нужную информацию и принять решение об использовании бота, не перегружая его информацией. Интерактивные элементы, такие как кликабельные диаграммы, аккордеоны и фильтры, используются для того, чтобы сделать процесс изучения более увлекательным. Размещение отзыва о диаграмме в отдельной вкладке, как того требует пользователь, также поддерживает эту изолированную структуру. -->
-    <!-- Visualization & Content Choices: 
-        1. Обзор процесса -> Цель: Информировать -> Метод: Интерактивная диаграмма на HTML/CSS -> Взаимодействие: Клик по шагу показывает описание. Обоснование: Простой и легковесный способ объяснить последовательность действий.
-        2. Комиссии -> Цель: Сравнить -> Метод: Кольцевая диаграмма (Chart.js) -> Взаимодействие: Анимация при загрузке. Обоснование: Визуально показывает малую долю комиссии (0.9%) от общей суммы, что эффективнее текста.
-        3. Отзывы -> Цель: Организовать -> Метод: Столбчатая диаграмма (Chart.js) и фильтруемые карточки -> Взаимодействие: Кнопки для фильтрации отзывов по тональности. Обоснование: Диаграмма дает быстрый срез мнений, а фильтры позволяют углубиться в детали.
-        4. Инструкции и FAQ -> Цель: Организовать -> Метод: Аккордеон (HTML/JS) -> Взаимодействие: Раскрытие/скрытие контента. Обоснование: Скрывает детали по умолчанию, делая страницу чище и позволяя пользователю сфокусироваться на интересующем его вопросе.
-    -->
-    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
     <style>
         body {
             font-family: 'Inter', sans-serif;
@@ -59,6 +51,14 @@
             border-color: #3b82f6;
             box-shadow: 0 4px 14px 0 rgba(0, 118, 255, 0.1);
         }
+        details > summary {
+            list-style: none;
+            cursor: pointer;
+        }
+        details > summary::marker,
+        details > summary::-webkit-details-marker {
+            display: none;
+        }
     </style>
 </head>
 <body class="antialiased">
@@ -71,6 +71,9 @@
             <div class="hidden md:flex space-x-2">
                 <button class="nav-btn active px-4 py-2 rounded-md font-medium" data-tab="overview">Обзор</button>
                 <button class="nav-btn px-4 py-2 rounded-md font-medium text-gray-600 hover:bg-gray-200" data-tab="instructions">Инструкции</button>
+                <button class="nav-btn px-4 py-2 rounded-md font-medium text-gray-600 hover:bg-gray-200" data-tab="services">Сервисы</button>
+                <button class="nav-btn px-4 py-2 rounded-md font-medium text-gray-600 hover:bg-gray-200" data-tab="kyc">KYC</button>
+                <button class="nav-btn px-4 py-2 rounded-md font-medium text-gray-600 hover:bg-gray-200" data-tab="faq">FAQ</button>
                 <button class="nav-btn px-4 py-2 rounded-md font-medium text-gray-600 hover:bg-gray-200" data-tab="reviews">Отзывы</button>
             </div>
             <div class="md:hidden">
@@ -82,6 +85,9 @@
         <div id="mobile-menu" class="hidden md:hidden px-6 pt-2 pb-4 border-t">
              <button class="nav-btn active w-full text-left px-4 py-2 rounded-md mb-2" data-tab="overview">Обзор</button>
              <button class="nav-btn w-full text-left px-4 py-2 rounded-md mb-2 text-gray-600 hover:bg-gray-200" data-tab="instructions">Инструкции</button>
+             <button class="nav-btn w-full text-left px-4 py-2 rounded-md mb-2 text-gray-600 hover:bg-gray-200" data-tab="services">Сервисы</button>
+             <button class="nav-btn w-full text-left px-4 py-2 rounded-md mb-2 text-gray-600 hover:bg-gray-200" data-tab="kyc">KYC</button>
+             <button class="nav-btn w-full text-left px-4 py-2 rounded-md mb-2 text-gray-600 hover:bg-gray-200" data-tab="faq">FAQ</button>
              <button class="nav-btn w-full text-left px-4 py-2 rounded-md mb-2 text-gray-600 hover:bg-gray-200" data-tab="reviews">Отзывы</button>
         </div>
     </header>
@@ -120,99 +126,521 @@
                 </div>
             </section>
 
-            <section id="fees" class="mb-20 scroll-mt-20">
-                <h2 class="text-3xl font-bold text-center mb-12">Тарифы и Комиссии</h2>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
-                    <div class="text-center md:text-left">
-                        <h3 class="text-2xl font-semibold mb-4">Прозрачная структура</h3>
-                        <p class="text-gray-600 mb-6">Бот взимает одну из самых низких комиссий на рынке за прием платежей в криптовалюте. Это делает его выгодным инструментом для фрилансеров и малого бизнеса.</p>
-                        <div class="bg-blue-50 border-l-4 border-blue-500 p-4 rounded-r-lg">
-                            <p class="text-4xl font-bold text-blue-600">0.9%</p>
-                            <p class="text-gray-700">комиссия за любую успешную транзакцию.</p>
-                        </div>
-                        <p class="text-gray-500 mt-4 text-sm">Также существует комиссия за вывод средств с внутреннего баланса бота на ваш кошелек, которая обычно составляет около 5 TON.</p>
-                    </div>
-                    <div>
-                        <div class="chart-container">
-                            <canvas id="feesChart"></canvas>
-                        </div>
-                    </div>
+            <section id="tariffs" class="mb-20 scroll-mt-20">
+                <h2 class="text-3xl font-bold text-center mb-4">Тарифы и условия</h2>
+                <p class="text-center text-gray-600 mb-12 max-w-2xl mx-auto">В этом документе изложены дополнительные услуги и комиссии, которые предоставляем нашим клиентам в соответствии с условиями использования карт. В нем также изложены другие важные вещи, которые вам необходимо знать перед оформлением карты или при её использовании. Пожалуйста, внимательно прочитайте эти положения и условия.</p>
+
+                <div class="overflow-x-auto rounded-lg shadow-lg">
+                    <table class="w-full text-sm text-gray-500 text-center">
+                        <thead class="text-xs text-gray-700 uppercase bg-gray-50">
+                            <tr>
+                                <th scope="col" class="px-6 py-3 text-left">Тарифный план</th>
+                                <th align="center" scope="col" class="px-6 py-3">Prepaid</th>
+                                <th align="center" scope="col" class="px-6 py-3">Easy</th>
+                                <th align="center" scope="col" class="px-6 py-3">Smart</th>
+                                <th align="center" scope="col" class="px-6 py-3">Pro</th>
+                                <th align="center" scope="col" class="px-6 py-3 hidden md:table-cell">Pro (до 30.04.2025)</th>
+                                <th align="center" scope="col" class="px-6 py-3 hidden md:table-cell">Smart</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="bg-white border-b">
+                                <td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap text-left">Выпуск карты</td>
+                                <td align="center" class="px-6 py-4">от ₽715 до ₽89.250</td>
+                                <td align="center" class="px-6 py-4">₽ 990</td>
+                                <td align="center" class="px-6 py-4">₽ 1990</td>
+                                <td align="center" class="px-6 py-4">₽ 3490</td>
+                                <td align="center" class="px-6 py-4 hidden md:table-cell">₽ 3490</td>
+                                <td align="center" class="px-6 py-4 hidden md:table-cell"></td>
+                            </tr>
+                            <tr class="bg-white border-b">
+                                <td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap text-left">Обслуживание карты (Подписка Plus)</td>
+                                <td align="center" class="px-6 py-4">0₽</td>
+                                <td align="center" class="px-6 py-4">₽690/месяц<br><a href="../podpiska-plus-dlya-kart-s-tarifom-smart-easy-pro#skolko-stoit-podpiska" class="text-blue-500 hover:underline">Тарифы</a></td>
+                                <td align="center" class="px-6 py-4">₽690/месяц <a href="podpiska-plus-dlya-kart-s-tarifom-smart-easy-pro" class="text-blue-500 hover:underline">Тарифы</a></td>
+                                <td align="center" class="px-6 py-4">₽690/месяц<br><a href="../podpiska-plus-dlya-kart-s-tarifom-smart-easy-pro#skolko-stoit-podpiska" class="text-blue-500 hover:underline">Тарифы</a></td>
+                                <td align="center" class="px-6 py-4 hidden md:table-cell">₽690/месяц</td>
+                                <td align="center" class="px-6 py-4 hidden md:table-cell"></td>
+                            </tr>
+                            <tr class="bg-white border-b">
+                                <td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap text-left">Депозит на карту</td>
+                                <td align="center" class="px-6 py-4">Нет</td>
+                                <td align="center" class="px-6 py-4">$10,00</td>
+                                <td align="center" class="px-6 py-4">$10,00</td>
+                                <td align="center" class="px-6 py-4">$10,00</td>
+                                <td align="center" class="px-6 py-4 hidden md:table-cell">$10,00</td>
+                                <td align="center" class="px-6 py-4 hidden md:table-cell"></td>
+                            </tr>
+                            <tr class="bg-white border-b">
+                                <td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap text-left">Лимит покупок в месяц</td>
+                                <td align="center" class="px-6 py-4">$1.000</td>
+                                <td align="center" class="px-6 py-4">$4.000</td>
+                                <td align="center" class="px-6 py-4">$50.000</td>
+                                <td align="center" class="px-6 py-4">$50.000</td>
+                                <td align="center" class="px-6 py-4 hidden md:table-cell">$50.000</td>
+                                <td align="center" class="px-6 py-4 hidden md:table-cell"></td>
+                            </tr>
+                            <tr class="bg-white border-b">
+                                <td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap text-left">Стоимость транзакции<br>(Доллар США)</td>
+                                <td align="center" class="px-6 py-4">0%</td>
+                                <td align="center" class="px-6 py-4">2,5% (min $1,00)</td>
+                                <td align="center" class="px-6 py-4">$0</td>
+                                <td align="center" class="px-6 py-4">$0.109</td>
+                                <td align="center" class="px-6 py-4 hidden md:table-cell">$0,50</td>
+                                <td align="center" class="px-6 py-4 hidden md:table-cell"></td>
+                            </tr>
+                            <tr class="bg-white border-b">
+                                <td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap text-left">Стоимость транзакции (Мультивалютная)</td>
+                                <td align="center" class="px-6 py-4">0%</td>
+                                <td align="center" class="px-6 py-4">2,5% (min $1,00)</td>
+                                <td align="center" class="px-6 py-4">$0</td>
+                                <td align="center" class="px-6 py-4">$0.4845</td>
+                                <td align="center" class="px-6 py-4 hidden md:table-cell">$0,50 + 1%</td>
+                                <td align="center" class="px-6 py-4 hidden md:table-cell"></td>
+                            </tr>
+                            <tr class="bg-white border-b">
+                                <td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap text-left">Транзакция отмены</td>
+                                <td align="center" class="px-6 py-4">0$</td>
+                                <td align="center" class="px-6 py-4">10 операций - 1,00$</td>
+                                <td align="center" class="px-6 py-4">$0</td>
+                                <td align="center" class="px-6 py-4">$0.719</td>
+                                <td align="center" class="px-6 py-4 hidden md:table-cell">$0,30</td>
+                                <td align="center" class="px-6 py-4 hidden md:table-cell"></td>
+                            </tr>
+                            <tr class="bg-white border-b">
+                                <td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap text-left">Срок действия</td>
+                                <td align="center" class="px-6 py-4">60 Дней</td>
+                                <td align="center" class="px-6 py-4">36 месяцев</td>
+                                <td align="center" class="px-6 py-4">24 месяца</td>
+                                <td align="center" class="px-6 py-4">24 месяца</td>
+                                <td align="center" class="px-6 py-4 hidden md:table-cell">12 месяцев</td>
+                                <td align="center" class="px-6 py-4 hidden md:table-cell"></td>
+                            </tr>
+                            <tr class="bg-white border-b">
+                                <td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap text-left">Пополнение баланса фиат</td>
+                                <td align="center" class="px-6 py-4">Нет</td>
+                                <td align="center" class="px-6 py-4">Да/Внутренний курс</td>
+                                <td align="center" class="px-6 py-4">Да/Внутренний курс</td>
+                                <td align="center" class="px-6 py-4">Да/Внутренний курс</td>
+                                <td align="center" class="px-6 py-4 hidden md:table-cell">Да/Внутренний курс</td>
+                                <td align="center" class="px-6 py-4 hidden md:table-cell"></td>
+                            </tr>
+                            <tr class="bg-white border-b">
+                                <td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap text-left">Пополнение криптовалюта: USDT, USDC, TON, BTC, ETH, BNB</td>
+                                <td align="center" class="px-6 py-4">Нет</td>
+                                <td align="center" class="px-6 py-4">5%</td>
+                                <td align="center" class="px-6 py-4">Да/7%</td>
+                                <td align="center" class="px-6 py-4">9%</td>
+                                <td align="center" class="px-6 py-4 hidden md:table-cell">Да/USDT (TRC-20) - 9%</td>
+                                <td align="center" class="px-6 py-4 hidden md:table-cell"></td>
+                            </tr>
+                            <tr class="bg-white border-b">
+                                <td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap text-left">3D-Secure</td>
+                                <td align="center" class="px-6 py-4">Да (автоматический)</td>
+                                <td align="center" class="px-6 py-4">Да (автоматический)</td>
+                                <td align="center" class="px-6 py-4">Да</td>
+                                <td align="center" class="px-6 py-4">Да</td>
+                                <td align="center" class="px-6 py-4 hidden md:table-cell">Да</td>
+                                <td align="center" class="px-6 py-4 hidden md:table-cell"></td>
+                            </tr>
+                            <tr class="bg-white border-b">
+                                <td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap text-left">Бесконтактная оплата за пределами РФ</td>
+                                <td align="center" class="px-6 py-4">Нет</td>
+                                <td align="center" class="px-6 py-4">Нет</td>
+                                <td align="center" class="px-6 py-4">Apple Pay</td>
+                                <td align="center" class="px-6 py-4">Apple Pay</td>
+                                <td align="center" class="px-6 py-4 hidden md:table-cell">Apple Pay</td>
+                                <td align="center" class="px-6 py-4 hidden md:table-cell"></td>
+                            </tr>
+                            <tr class="bg-white border-b">
+                                <td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap text-left">Дополнительная карта</td>
+                                <td align="center" class="px-6 py-4">Неограничено</td>
+                                <td align="center" class="px-6 py-4">Нет</td>
+                                <td align="center" class="px-6 py-4">Нет</td>
+                                <td align="center" class="px-6 py-4">Нет</td>
+                                <td align="center" class="px-6 py-4 hidden md:table-cell">Нет</td>
+                                <td align="center" class="px-6 py-4 hidden md:table-cell"></td>
+                            </tr>
+                            <tr class="bg-white border-b">
+                                <td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap text-left">Вывод средств с карты</td>
+                                <td align="center" class="px-6 py-4">Нет</td>
+                                <td align="center" class="px-6 py-4">Нет</td>
+                                <td align="center" class="px-6 py-4">Нет</td>
+                                <td align="center" class="px-6 py-4">Нет</td>
+                                <td align="center" class="px-6 py-4 hidden md:table-cell">Нет</td>
+                                <td align="center" class="px-6 py-4 hidden md:table-cell"></td>
+                            </tr>
+                            <tr class="bg-white border-b">
+                                <td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap text-left">Служба поддержки</td>
+                                <td align="center" class="px-6 py-4">Да</td>
+                                <td align="center" class="px-6 py-4">Да</td>
+                                <td align="center" class="px-6 py-4">Да</td>
+                                <td align="center" class="px-6 py-4">Да</td>
+                                <td align="center" class="px-6 py-4 hidden md:table-cell">Да</td>
+                                <td align="center" class="px-6 py-4 hidden md:table-cell"></td>
+                            </tr>
+                            <tr class="bg-white border-b">
+                                <td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap text-left">Условия использования</td>
+                                <td align="center" class="px-6 py-4"><a href="usloviya-ispolzovaniya-kart-wanttopay/tarif-prepaid" class="text-blue-500 hover:underline">Смотреть</a></td>
+                                <td align="center" class="px-6 py-4"><a href="usloviya-ispolzovaniya-kart-wanttopay/tarif-easy" class="text-blue-500 hover:underline">Смотреть</a></td>
+                                <td align="center" class="px-6 py-4"><a href="usloviya-ispolzovaniya-kart-wanttopay/tarif-smart" class="text-blue-500 hover:underline">Смотреть</a></td>
+                                <td align="center" class="px-6 py-4"><a href="usloviya-ispolzovaniya-kart-wanttopay/tarif-pro" class="text-blue-500 hover:underline">Смотреть</a></td>
+                                <td align="center" class="px-6 py-4 hidden md:table-cell"></td>
+                                <td align="center" class="px-6 py-4 hidden md:table-cell"></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="mt-8 bg-blue-50 border-l-4 border-blue-500 text-blue-700 p-4 rounded-r-lg">
+                    <p class="font-bold">Примечание</p>
+                    <p class="mt-2 text-sm">*Клиент может совершать покупки на любых платформах, за исключением следующих платежных категорий:*</p>
+                    <ul class="list-disc list-inside mt-2 text-sm ml-4">
+                        <li>Mining</li>
+                        <li>Adult Industry</li>
+                        <li>Money Services Business</li>
+                        <li>Stock Promotion</li>
+                        <li>Waste Management</li>
+                        <li>Arms Trading – Retail/Manufacturing</li>
+                        <li>Casinos/Gaming</li>
+                        <li>Cryptocurrency</li>
+                        <li>Government/Military/Public Agency</li>
+                        <li>Marijuana Services Business</li>
+                    </ul>
+                </div>
+
+                <div class="mt-8 bg-blue-50 border-l-4 border-blue-500 text-blue-700 p-4 rounded-r-lg">
+                    <p class="text-sm">Выпущенная карта обмену и возврату не подлежит. Каждый пользователь может выпустить только одну карту до конца срока её действия</p>
                 </div>
             </section>
         </div>
 
         <div id="tab-instructions" class="tab-content hidden">
             <section id="getting-started" class="mb-20 scroll-mt-20">
-                <h2 class="text-3xl font-bold text-center mb-12">Начало работы: Пошаговая инструкция</h2>
+                <h2 class="text-3xl font-bold text-center mb-12">Оплата/пополнение карт в криптовалюте</h2>
+                <p class="text-gray-700 max-w-3xl mx-auto mb-6">
+                    Вы можете оплатить выпуск карты WantToPay с помощью криптовалюты через платёжный сервис Cryptomus. Поддерживаются следующие монеты: USDT, USDC, TON, BTC, BNB, ETH — выберите любую, доступную в вашем кошельке или на бирже.
+                </p>
+                
+                <div class="bg-blue-50 border-l-4 border-blue-500 text-blue-700 p-4 rounded-r-lg max-w-3xl mx-auto mb-6">
+                    <p class="font-bold">Важно:</p>
+                    <p class="mt-2 text-sm">инструкция подходит как для оплаты, так и для пополнения карты через Cryptomus. Просто выберите нужную карту и следуйте шагам ниже.</p>
+                </div>
+                
+                <p class="text-gray-700 max-w-3xl mx-auto mb-8">
+                    В инструкции показан пример оплаты через биржу Bybit с использованием USDT (TRC-20).
+                </p>
+
                 <div class="max-w-3xl mx-auto">
-                    <div class="accordion-item bg-white rounded-lg shadow mb-4">
-                        <button class="accordion-header w-full text-left p-6 font-semibold text-lg flex justify-between items-center">
-                            Шаг 1: Запуск бота и создание проекта
-                            <span class="transform transition-transform duration-300">▼</span>
-                        </button>
-                        <div class="accordion-content px-6 pb-6">
-                            <p class="text-gray-600">Найдите в Telegram бота <a href="https://t.me/WantToPayBot" target="_blank" class="text-blue-500 hover:underline">@WantToPayBot</a> и нажмите "Старт". Бот предложит вам создать новый проект. Дайте ему название — например, имя вашего магазина или ваше имя. Проект — это ваше рабочее пространство для управления счетами.</p>
-                        </div>
-                    </div>
-                    <div class="accordion-item bg-white rounded-lg shadow mb-4">
-                        <button class="accordion-header w-full text-left p-6 font-semibold text-lg flex justify-between items-center">
-                            Шаг 2: Подключение кошелька
-                            <span class="transform transition-transform duration-300">▼</span>
-                        </button>
-                        <div class="accordion-content px-6 pb-6">
-                            <p class="text-gray-600">После создания проекта бот попросит вас подключить криптокошелек для приема средств. Вы можете использовать популярные кошельки, такие как Tonkeeper или MyTonWallet. Следуйте инструкциям бота, чтобы безопасно привязать адрес вашего кошелька. Средства будут поступать именно на него.</p>
-                        </div>
-                    </div>
-                    <div class="accordion-item bg-white rounded-lg shadow mb-4">
-                        <button class="accordion-header w-full text-left p-6 font-semibold text-lg flex justify-between items-center">
-                            Шаг 3: Создание первого счета
-                            <span class="transform transition-transform duration-300">▼</span>
-                        </button>
-                        <div class="accordion-content px-6 pb-6">
-                            <p class="text-gray-600">В меню вашего проекта выберите "Создать счет". Укажите сумму, выберите валюту (например, TON, USDT, USDC) и добавьте описание платежа. Бот сгенерирует уникальную ссылку для оплаты. Эту ссылку вы можете отправить своему клиенту любым удобным способом.</p>
-                        </div>
-                    </div>
-                    <div class="accordion-item bg-white rounded-lg shadow mb-4">
-                        <button class="accordion-header w-full text-left p-6 font-semibold text-lg flex justify-between items-center">
-                            Шаг 4: Управление счетами и балансом
-                            <span class="transform transition-transform duration-300">▼</span>
-                        </button>
-                        <div class="accordion-content px-6 pb-6">
-                            <p class="text-gray-600">В главном меню бота вы можете отслеживать статус всех выставленных счетов, просматривать историю транзакций и управлять своим балансом. Когда клиент оплатит счет, вы получите уведомление в Telegram.</p>
-                        </div>
-                    </div>
+                    <h3 class="text-2xl font-bold mt-8 mb-4">Шаг 1 Оформление карты</h3>
+                    <ol class="list-decimal list-inside space-y-2 text-gray-700">
+                        <li>Перейдите в мини-приложение <a href="https://t.me/wanttopaybot" target="_blank" class="text-blue-500 hover:underline">@WantToPayBot</a></li>
+                        <li>Выберите нужную карту (например, Visa Prepaid)</li>
+                        <li>Выберите номинал (например, на $5) и способ оплаты USDT</li>
+                        <li>Укажите сеть Tron (TRC20)</li>
+                        <li>Нажмите кнопку Оплатить</li>
+                        <li>Вы будете перенаправлены на страницу Cryptomus</li>
+                        <li>Скопируйте адрес кошелька и сумму, указанную на экране</li>
+                    </ol>
+
+                    <h3 class="text-2xl font-bold mt-8 mb-4">Шаг 2 Оплата на бирже</h3>
+                    <ol class="list-decimal list-inside space-y-2 text-gray-700">
+                        <li>Откройте криптокошелёк на бирже Bybit</li>
+                        <li>Откройте вкладку Активы</li>
+                        <li>Нажмите Вывод средств</li>
+                        <li>Выберите монету USDT</li>
+                        <li>Вставьте адрес, скопированный на Cryptomus</li>
+                        <li>Убедитесь, что выбрана сеть TRC20</li>
+                        <li>Вставьте адрес, скопированный на странице Cryptomus (7 USDT)</li>
+                        <li>Подтвердите операцию</li>
+                        <li>Введите код подтверждения (через почту и Google Authenticator)</li>
+                        <li>Дождитесь появления статуса Отправлено</li>
+                        <li>Вернитесь в Telegram и дождитесь подтверждения оплаты в боте</li>
+                    </ol>
+                </div>
+                
+                <div class="bg-blue-50 border-l-4 border-blue-500 text-blue-700 p-4 rounded-r-lg mt-8 mb-6 max-w-3xl mx-auto">
+                    <p class="font-bold">Примечание:</p>
+                    <p class="mt-2 text-sm">Если после отправки криптовалюты статус не изменился или возникли вопросы, свяжитесь с поддержкой через <a href="https://t.me/WantToPaySupportBot" target="_blank" class="text-blue-700 underline">@WantToPaySupportBot</a>.</p>
                 </div>
             </section>
-            <section id="faq" class="scroll-mt-20">
+        </div>
+        
+        <div id="tab-services" class="tab-content hidden">
+             <section id="service-list" class="scroll-mt-20">
+                <h2 class="text-3xl font-bold text-center mb-6">Список сервисов</h2>
+                <p class="text-center text-gray-700 max-w-3xl mx-auto mb-6">
+                    Добро пожаловать в мир удобных и безопасных платежей с виртуальными картами от Wanttopay! Мы рады представить вам наш список оплачиваемых сервисов, тут вы найдете информацию о платформах и сервисах, где вы сможете использовать наши виртуальные карты.
+                </p>
+
+                <div class="bg-blue-50 border-l-4 border-blue-500 text-blue-700 p-4 rounded-r-lg max-w-3xl mx-auto mb-6">
+                    <p class="font-bold">Примечание:</p>
+                    <p class="mt-2 text-sm">Возможности оплаты виртуальной карты не ограничивается только этим списком. Он будет регулярно обновляться и дополняться новыми сервисами.</p>
+                </div>
+
+                <p class="text-gray-700 max-w-3xl mx-auto mb-6">
+                    Используются следующие обозначения:
+                </p>
+                <div class="max-w-3xl mx-auto mb-8 flex flex-wrap justify-center md:justify-start gap-4 text-sm font-mono text-gray-600">
+                    <span class="bg-green-200 text-green-800 rounded-full px-3 py-1">✅ Успешная оплата</span>
+                    <span class="bg-yellow-200 text-yellow-800 rounded-full px-3 py-1">✴️ Сервисы доступные к оплате только после прохождения KYC</span>
+                    <span class="bg-red-200 text-red-800 rounded-full px-3 py-1">🚫 Карта не подходит</span>
+                    <span class="bg-gray-200 text-gray-800 rounded-full px-3 py-1">➖ Сервис не тестировался</span>
+                </div>
+
+                <div class="overflow-x-auto rounded-lg shadow-lg max-w-full mx-auto">
+                    <table class="min-w-full text-sm text-gray-500 text-center bg-white">
+                        <thead class="text-xs text-gray-700 uppercase bg-gray-50">
+                            <tr>
+                                <th scope="col" class="px-6 py-3 text-left">Список сервисов</th>
+                                <th align="center" scope="col" class="px-6 py-3">Prepaid</th>
+                                <th align="center" scope="col" class="px-6 py-3">Easy</th>
+                                <th align="center" scope="col" class="px-6 py-3">Smart</th>
+                                <th align="center" scope="col" class="px-6 py-3">MC Pro (HK)</th>
+                                <th align="center" scope="col" class="px-6 py-3">MC Pro (USA)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="bg-white border-b"><td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap text-left">Adobe</td><td align="center" class="px-6 py-4">🚫</td><td align="center" class="px-6 py-4">🚫</td><td align="center" class="px-6 py-4">➖</td><td align="center" class="px-6 py-4">🚫</td><td align="center" class="px-6 py-4">➖</td></tr>
+                            <tr class="bg-white border-b"><td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap text-left">Airalo<br><a href="https://wanttopay.net/news/tpost/utlz6offb1-kak-podklyuchit-esim-airalo-i-kak-oplati" class="text-blue-500 hover:underline">Инструкция</a></td><td align="center" class="px-6 py-4">✅</td><td align="center" class="px-6 py-4">✅</td><td align="center" class="px-6 py-4">✅</td><td align="center" class="px-6 py-4">✅</td><td align="center" class="px-6 py-4">➖</td></tr>
+                            <tr class="bg-white border-b"><td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap text-left">Airbnb<br><a href="https://wanttopay.net/news/tpost/7n544nv401-kak-zabronirovat-airbnb-iz-rossii-v-2025" class="text-blue-500 hover:underline">Инструкция</a></td><td align="center" class="px-6 py-4">✅</td><td align="center" class="px-6 py-4">✅</td><td align="center" class="px-6 py-4">✅</td><td align="center" class="px-6 py-4">✅</td><td align="center" class="px-6 py-4">➖</td></tr>
+                            <tr class="bg-white border-b"><td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap text-left">AlibabaCloud.com</td><td align="center" class="px-6 py-4">✴️</td><td align="center" class="px-6 py-4">✴️</td><td align="center" class="px-6 py-4">➖</td><td align="center" class="px-6 py-4">➖</td><td align="center" class="px-6 py-4">➖</td></tr>
+                            <tr class="bg-white border-b"><td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap text-left">Anthropic API<br><a href="https://wanttopay.net/news/tpost/uoxjfo1nu1-anthropic-api-kupit-klyuchi-i-oplatit-kr" class="text-blue-500 hover:underline">Инструкция</a></td><td align="center" class="px-6 py-4">✅</td><td align="center" class="px-6 py-4">✅</td><td align="center" class="px-6 py-4">🚫</td><td align="center" class="px-6 py-4">🚫</td><td align="center" class="px-6 py-4">➖</td></tr>
+                            <tr class="bg-white border-b"><td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap text-left">Apple Pay <br><a href="instrukcii/instrukciya-apple-pay-dlya-kart-s-tarifom-pro" class="text-blue-500 hover:underline">Инструкция</a> </td><td align="center" class="px-6 py-4">🚫</td><td align="center" class="px-6 py-4">🚫</td><td align="center" class="px-6 py-4">✅</td><td align="center" class="px-6 py-4">✅</td><td align="center" class="px-6 py-4">✅</td></tr>
+                            <tr class="bg-white border-b"><td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap text-left">Apple Store<br>(USA)</td><td align="center" class="px-6 py-4">🚫</td><td align="center" class="px-6 py-4">🚫</td><td align="center" class="px-6 py-4">🚫</td><td align="center" class="px-6 py-4">🚫</td><td align="center" class="px-6 py-4">✅</td></tr>
+                            <tr class="bg-white border-b"><td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap text-left"><p>Apple Store</p><p>(Mexico)</p><p><a href="instrukcii/instrukciya-apple-store-dlya-kart-visa-easy-prepaid" class="text-blue-500 hover:underline">Инструкция</a></p></td><td align="center" class="px-6 py-4">✅</td><td align="center" class="px-6 py-4">✅</td><td align="center" class="px-6 py-4">🚫</td><td align="center" class="px-6 py-4">🚫</td><td align="center" class="px-6 py-4">🚫</td></tr>
+                            <tr class="bg-white border-b"><td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap text-left"><p>Apple Store</p><p>(Hong Kong)</p><p><a href="https://faq.wanttopay.net/hello/instrukcii/instrukciya-apple-store-dlya-kart-mastercard-pro" class="text-blue-500 hover:underline">Инструкция</a></p></td><td align="center" class="px-6 py-4">🚫</td><td align="center" class="px-6 py-4">🚫</td><td align="center" class="px-6 py-4">✅</td><td align="center" class="px-6 py-4">✅</td><td align="center" class="px-6 py-4">🚫</td></tr>
+                            <tr class="bg-white border-b"><td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap text-left">Amazon</td><td align="center" class="px-6 py-4">✴️</td><td align="center" class="px-6 py-4">✴️</td><td align="center" class="px-6 py-4">➖</td><td align="center" class="px-6 py-4">➖</td><td align="center" class="px-6 py-4">➖</td></tr>
+                            <tr class="bg-white border-b"><td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap text-left">Amazon Prime Video</td><td align="center" class="px-6 py-4">➖</td><td align="center" class="px-6 py-4">➖</td><td align="center" class="px-6 py-4">✅</td><td align="center" class="px-6 py-4">✅</td><td align="center" class="px-6 py-4">➖</td></tr>
+                            <tr class="bg-white border-b"><td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap text-left">Beenverified</td><td align="center" class="px-6 py-4">✴️</td><td align="center" class="px-6 py-4">✴️</td><td align="center" class="px-6 py-4">➖</td><td align="center" class="px-6 py-4">➖</td><td align="center" class="px-6 py-4">➖</td></tr>
+                            <tr class="bg-white border-b"><td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap text-left">Booking.com<br><a href="https://wanttopay.net/news/tpost/v4acz1l961-kak-oplatit-buking-v-2025-bez-ogranichen" class="text-blue-500 hover:underline">Инструкция</a></td><td align="center" class="px-6 py-4">✴️</td><td align="center" class="px-6 py-4">✴️</td><td align="center" class="px-6 py-4">✅</td><td align="center" class="px-6 py-4">✅</td><td align="center" class="px-6 py-4">➖</td></tr>
+                            <tr class="bg-white border-b"><td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap text-left">Bolt<br><a href="https://wanttopay.net/news/tpost/9m0e4o6db1-kak-zakazat-taksi-na-phukete-taksi-bolt" class="text-blue-500 hover:underline">Инструкция</a></td><td align="center" class="px-6 py-4">✅</td><td align="center" class="px-6 py-4">✅</td><td align="center" class="px-6 py-4">➖</td><td align="center" class="px-6 py-4">➖</td><td align="center" class="px-6 py-4">➖</td></tr>
+                            <tr class="bg-white border-b"><td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap text-left">Blizzard (BattleNet)</td><td align="center" class="px-6 py-4">🚫</td><td align="center" class="px-6 py-4">🚫</td><td align="center" class="px-6 py-4">🚫</td><td align="center" class="px-6 py-4">🚫</td><td align="center" class="px-6 py-4">➖</td></tr>
+                            <tr class="bg-white border-b"><td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap text-left">Brawl Stars<br><a href="https://wanttopay.net/news/tpost/klb453jta1-kak-kupit-bravl-pass-v-rossii" class="text-blue-500 hover:underline">Инструкция</a></td><td align="center" class="px-6 py-4">✅</td><td align="center" class="px-6 py-4">✅</td><td align="center" class="px-6 py-4">✅</td><td align="center" class="px-6 py-4">✅</td><td align="center" class="px-6 py-4">➖</td></tr>
+                            <tr class="bg-white border-b"><td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap text-left"><p>Canva</p><p><a href="https://wanttopay.net/news/tpost/ezhbfpt911-kak-oplatit-canva-iz-rossii-v-2023" class="text-blue-500 hover:underline">Инструкция</a></p></td><td align="center" class="px-6 py-4">✅</td><td align="center" class="px-6 py-4">✅</td><td align="center" class="px-6 py-4">➖</td><td align="center" class="px-6 py-4">➖</td><td align="center" class="px-6 py-4">➖</td></tr>
+                            <tr class="bg-white border-b"><td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap text-left">CCBill</td><td align="center" class="px-6 py-4">✴️</td><td align="center" class="px-6 py-4">✴️</td><td align="center" class="px-6 py-4">➖</td><td align="center" class="px-6 py-4">➖</td><td align="center" class="px-6 py-4">➖</td></tr>
+                            <tr class="bg-white border-b"><td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap text-left"><p>ChatGPT</p><p><a href="https://wanttopay.net/news/tpost/mkbhgjeer1-kak-oplatit-chatgpt-iz-rossii" class="text-blue-500 hover:underline">Инструкция</a> </p></td><td align="center" class="px-6 py-4">✅</td><td align="center" class="px-6 py-4">✅</td><td align="center" class="px-6 py-4">🚫</td><td align="center" class="px-6 py-4">🚫</td><td align="center" class="px-6 py-4">✅</td></tr>
+                            <tr class="bg-white border-b"><td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap text-left">CS.Fail (Portugal only)</td><td align="center" class="px-6 py-4">✅</td><td align="center" class="px-6 py-4">✅</td><td align="center" class="px-6 py-4">➖</td><td align="center" class="px-6 py-4"></td><td align="center" class="px-6 py-4">➖</td></tr>
+                            <tr class="bg-white border-b"><td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap text-left">Cloudflare</td><td align="center" class="px-6 py-4">✴️</td><td align="center" class="px-6 py-4">✴️</td><td align="center" class="px-6 py-4">✅</td><td align="center" class="px-6 py-4">✅</td><td align="center" class="px-6 py-4">➖</td></tr>
+                            <tr class="bg-white border-b"><td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap text-left">ClaudeAI<br><a href="https://wanttopay.net/news/tpost/lpyy5ms721-claude-pro-kak-kupit-neiroset-iz-rossii" class="text-blue-500 hover:underline">Инструкция</a></td><td align="center" class="px-6 py-4">✅ </td><td align="center" class="px-6 py-4">✅ </td><td align="center" class="px-6 py-4">🚫</td><td align="center" class="px-6 py-4">🚫</td><td align="center" class="px-6 py-4">➖</td></tr>
+                            <tr class="bg-white border-b"><td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap text-left">Cults3d<br><a href="https://wanttopay.net/news/tpost/x0e6tlb9m1-sults3d-kak-kupit-v-2025-godu" class="text-blue-500 hover:underline">Инструкция</a></td><td align="center" class="px-6 py-4">✅ </td><td align="center" class="px-6 py-4">✅ </td><td align="center" class="px-6 py-4">➖</td><td align="center" class="px-6 py-4">➖</td><td align="center" class="px-6 py-4">➖</td></tr>
+                            <tr class="bg-white border-b"><td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap text-left">CursorAI<br><a href="https://wanttopay.net/news/tpost/fkcste3fr1-kak-kupit-cursor-ai-iz-rossii-v-2025-god" class="text-blue-500 hover:underline">Инструкция</a></td><td align="center" class="px-6 py-4">✅</td><td align="center" class="px-6 py-4">✅</td><td align="center" class="px-6 py-4">➖</td><td align="center" class="px-6 py-4">➖</td><td align="center" class="px-6 py-4">➖</td></tr>
+                            <tr class="bg-white border-b"><td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap text-left">Digital Ocean</td><td align="center" class="px-6 py-4">✴️</td><td align="center" class="px-6 py-4">✴️</td><td align="center" class="px-6 py-4">➖</td><td align="center" class="px-6 py-4">➖</td><td align="center" class="px-6 py-4">➖</td></tr>
+                            <tr class="bg-white border-b"><td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap text-left">DALL·E 3</td><td align="center" class="px-6 py-4">✅</td><td align="center" class="px-6 py-4">✅</td><td align="center" class="px-6 py-4">➖</td><td align="center" class="px-6 py-4">➖</td><td align="center" class="px-6 py-4">➖</td></tr>
+                            <tr class="bg-white border-b"><td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap text-left">Discord<br><a href="https://wanttopay.net/news/tpost/j5unr1y1e1-kak-kupit-diskord-nitro-v-rossii" class="text-blue-500 hover:underline">Инструкция</a></td><td align="center" class="px-6 py-4">✅</td><td align="center" class="px-6 py-4">✅</td><td align="center" class="px-6 py-4">✅</td><td align="center" class="px-6 py-4">✅</td><td align="center" class="px-6 py-4">➖</td></tr>
+                            <tr class="bg-white border-b"><td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap text-left">Deviantart</td><td align="center" class="px-6 py-4">✅</td><td align="center" class="px-6 py-4">✅</td><td align="center" class="px-6 py-4">➖</td><td align="center" class="px-6 py-4">➖</td><td align="center" class="px-6 py-4">➖</td></tr>
+                            <tr class="bg-white border-b"><td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap text-left">DeepL</td><td align="center" class="px-6 py-4">🚫</td><td align="center" class="px-6 py-4">🚫</td><td align="center" class="px-6 py-4">➖</td><td align="center" class="px-6 py-4">➖</td><td align="center" class="px-6 py-4">➖</td></tr>
+                            <tr class="bg-white border-b"><td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap text-left">Dropbox<br><a href="https://wanttopay.net/news/tpost/fajxjsy601-kak-oplatit-dropbox-v-rossii" class="text-blue-500 hover:underline">Инструкция</a></td><td align="center" class="px-6 py-4">🚫</td><td align="center" class="px-6 py-4">🚫</td><td align="center" class="px-6 py-4">✅</td><td align="center" class="px-6 py-4">✅</td><td align="center" class="px-6 py-4">➖</td></tr>
+                            <tr class="bg-white border-b"><td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap text-left">Envato Elements<br><a href="https://wanttopay.net/tpost/kdvosysbh1-kak-oplatit-envato-elements" class="text-blue-500 hover:underline">Инструкция</a></td><td align="center" class="px-6 py-4">✅</td><td align="center" class="px-6 py-4">✅</td><td align="center" class="px-6 py-4">✅</td><td align="center" class="px-6 py-4">✅</td><td align="center" class="px-6 py-4">➖</td></tr>
+                            <tr class="bg-white border-b"><td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap text-left">Elevenlabs<br><a href="https://wanttopay.net/news/tpost/x7zr8fof51-kupit-elevenlabs-bez-ogranichenii" class="text-blue-500 hover:underline">Инструкция</a></td><td align="center" class="px-6 py-4">✅</td><td align="center" class="px-6 py-4">✅</td><td align="center" class="px-6 py-4">✅</td><td align="center" class="px-6 py-4">✅</td><td align="center" class="px-6 py-4">➖</td></tr>
+                            <tr class="bg-white border-b"><td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap text-left">Etsy.com</td><td align="center" class="px-6 py-4">🚫</td><td align="center" class="px-6 py-4">🚫</td><td align="center" class="px-6 py-4">➖</td><td align="center" class="px-6 py-4">➖</td><td align="center" class="px-6 py-4">➖</td></tr>
+                            <tr class="bg-white border-b"><td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap text-left">Explodingtopicspro</td><td align="center" class="px-6 py-4">✴️</td><td align="center" class="px-6 py-4">✴️</td><td align="center" class="px-6 py-4">➖</td><td align="center" class="px-6 py-4">➖</td><td align="center" class="px-6 py-4">➖</td></tr>
+                            <tr class="bg-white border-b"><td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap text-left">Expressvpn</td><td align="center" class="px-6 py-4">🚫</td><td align="center" class="px-6 py-4">🚫</td><td align="center" class="px-6 py-4">✅</td><td align="center" class="px-6 py-4">✅</td><td align="center" class="px-6 py-4">➖</td></tr>
+                            <tr class="bg-white border-b"><td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap text-left">Facebook</td><td align="center" class="px-6 py-4">✴️</td><td align="center" class="px-6 py-4">✴️</td><td align="center" class="px-6 py-4">➖</td><td align="center" class="px-6 py-4">➖</td><td align="center" class="px-6 py-4">➖</td></tr>
+                            <tr class="bg-white border-b"><td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap text-left">Facebook Ads</td><td align="center" class="px-6 py-4">✴️</td><td align="center" class="px-6 py-4">✴️</td><td align="center" class="px-6 py-4">✅</td><td align="center" class="px-6 py-4">✅</td><td align="center" class="px-6 py-4">➖</td></tr>
+                            <tr class="bg-white border-b"><td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap text-left"><p>Fansly </p><p><a href="instrukcii/kak-oplachivat-fansly-virtualnoi-kartoi-visa-prepaid" class="text-blue-500 hover:underline">Инструкция</a></p></td><td align="center" class="px-6 py-4">✴️</td><td align="center" class="px-6 py-4">✴️</td><td align="center" class="px-6 py-4">🚫</td><td align="center" class="px-6 py-4">🚫</td><td align="center" class="px-6 py-4">➖</td></tr>
+                            <tr class="bg-white border-b"><td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap text-left">Figma<br><a href="https://wanttopay.net/news/tpost/mmvcd4tz91-kak-oplatit-podpisku-figma-bez-ograniche" class="text-blue-500 hover:underline">Инструкция</a></td><td align="center" class="px-6 py-4">✅</td><td align="center" class="px-6 py-4">✅</td><td align="center" class="px-6 py-4">✅</td><td align="center" class="px-6 py-4">✅</td><td align="center" class="px-6 py-4">➖</td></tr>
+                            <tr class="bg-white border-b"><td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap text-left">Flair AI</td><td align="center" class="px-6 py-4">✅</td><td align="center" class="px-6 py-4">✅</td><td align="center" class="px-6 py-4">➖</td><td align="center" class="px-6 py-4">➖</td><td align="center" class="px-6 py-4">➖</td></tr>
+                            <tr class="bg-white border-b"><td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap text-left">Github Copilot</td><td align="center" class="px-6 py-4">✅</td><td align="center" class="px-6 py-4">✅</td><td align="center" class="px-6 py-4">➖</td><td align="center" class="px-6 py-4">➖</td><td align="center" class="px-6 py-4">➖</td></tr>
+                            <tr class="bg-white border-b"><td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap text-left">Google Adsense</td><td align="center" class="px-6 py-4">✴️</td><td align="center" class="px-6 py-4">✴️</td><td align="center" class="px-6 py-4">🚫</td><td align="center" class="px-6 py-4">🚫</td><td align="center" class="px-6 py-4">➖</td></tr>
+                            <tr class="bg-white border-b"><td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap text-left">Gamma App<br><a href="https://wanttopay.net/news/tpost/hxvhmi6vr1-kak-oplatit-gamma-bez-ogranichenii" class="text-blue-500 hover:underline">Инструкция</a></td><td align="center" class="px-6 py-4">✅</td><td align="center" class="px-6 py-4">✅</td><td align="center" class="px-6 py-4">➖</td><td align="center" class="px-6 py-4">➖</td><td align="center" class="px-6 py-4">➖</td></tr>
+                            <tr class="bg-white border-b"><td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap text-left">GetContact</td><td align="center" class="px-6 py-4">🚫</td><td align="center" class="px-6 py-4">🚫</td><td align="center" class="px-6 py-4">🚫</td><td align="center" class="px-6 py-4">🚫</td><td align="center" class="px-6 py-4">🚫</td></tr>
+                            <tr class="bg-white border-b"><td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap text-left">Google Pay<br><a href="instrukcii/instrukciya-google-pay-dlya-kart-s-tarifom-pro" class="text-blue-500 hover:underline">Инструкция</a></td><td align="center" class="px-6 py-4">🚫</td><td align="center" class="px-6 py-4">🚫</td><td align="center" class="px-6 py-4">🚫</td><td align="center" class="px-6 py-4">🚫</td><td align="center" class="px-6 py-4">✅</td></tr>
+                            <tr class="bg-white border-b"><td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap text-left"><p>Google Play</p><p><a href="https://wanttopay.net/news/tpost/u320er9vo1-kak-oplatit-prilozhenie-v-google-play-v" class="text-blue-500 hover:underline">Инструкция</a></p></td><td align="center" class="px-6 py-4">✅</td><td align="center" class="px-6 py-4">✅</td><td align="center" class="px-6 py-4">✅</td><td align="center" class="px-6 py-4">✅</td><td align="center" class="px-6 py-4">✅</td></tr>
+                            <tr class="bg-white border-b"><td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap text-left">Google One<br><a href="https://wanttopay.net/news/tpost/tl5pb9glp1-kak-oplatit-gugl-disk-v-rossii-google-on" class="text-blue-500 hover:underline">Инструкция</a></td><td align="center" class="px-6 py-4">✅</td><td align="center" class="px-6 py-4">✅</td><td align="center" class="px-6 py-4">✅</td><td align="center" class="px-6 py-4">✅</td><td align="center" class="px-6 py-4">✅</td></tr>
+                            <tr class="bg-white border-b"><td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap text-left">Google Cloud</td><td align="center" class="px-6 py-4">✴️</td><td align="center" class="px-6 py-4">✴️</td><td align="center" class="px-6 py-4">🚫</td><td align="center" class="px-6 py-4">🚫</td><td align="center" class="px-6 py-4">➖</td></tr>
+                            <tr class="bg-white border-b"><td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap text-left">Google Console</td><td align="center" class="px-6 py-4">🚫</td><td align="center" class="px-6 py-4">🚫</td><td align="center" class="px-6 py-4">🚫</td><td align="center" class="px-6 py-4">🚫</td><td align="center" class="px-6 py-4">🚫</td></tr>
+                            <tr class="bg-white border-b"><td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap text-left">Google Gemini<br>(AI Pro |<br>Veo3)<br><a href="https://wanttopay.net/news/tpost/uik0phi5i1-gemini-kupit-kartoi-iz-rossii" class="text-blue-500 hover:underline">Инструкция</a></td><td align="center" class="px-6 py-4">✅</td><td align="center" class="px-6 py-4">✅</td><td align="center" class="px-6 py-4">➖</td><td align="center" class="px-6 py-4">➖</td><td align="center" class="px-6 py-4">➖</td></tr>
+                            <tr class="bg-white border-b"><td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap text-left">Grok AI<br><a href="https://wanttopay.net/news/tpost/a6ihhiez11-grok-ai-kak-oplatit-v-2025-godu" class="text-blue-500 hover:underline">Инструкция</a></td><td align="center" class="px-6 py-4">✅</td><td align="center" class="px-6 py-4">✅</td><td align="center" class="px-6 py-4">✅</td><td align="center" class="px-6 py-4">✅</td><td align="center" class="px-6 py-4">➖</td></tr>
+                            <tr class="bg-white border-b"><td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap text-left">Gumroad<br><a href="https://wanttopay.net/news/tpost/gigunhvam1-kak-oplatit-gumroad" class="text-blue-500 hover:underline">Инструкция</a></td><td align="center" class="px-6 py-4">✅</td><td align="center" class="px-6 py-4">✅</td><td align="center" class="px-6 py-4">➖</td><td align="center" class="px-6 py-4">➖</td><td align="center" class="px-6 py-4">➖</td></tr>
+                            <tr class="bg-white border-b"><td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap text-left">Here.com</td><td align="center" class="px-6 py-4">✅</td><td align="center" class="px-6 py-4">✅</td><td align="center" class="px-6 py-4">➖</td><td align="center" class="px-6 py-4">➖</td><td align="center" class="px-6 py-4">➖</td></tr>
+                            <tr class="bg-white border-b"><td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap text-left">Heygen<br><a href="https://wanttopay.net/news/tpost/1n02c6gu21-kak-oplatit-heygen-iz-rossii-v-2025-godu" class="text-blue-500 hover:underline">Инструкция</a></td><td align="center" class="px-6 py-4">✅</td><td align="center" class="px-6 py-4">✅</td><td align="center" class="px-6 py-4">➖</td><td align="center" class="px-6 py-4">➖</td><td align="center" class="px-6 py-4">➖</td></tr>
+                            <tr class="bg-white border-b"><td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap text-left">Itch.io<br><a href="https://wanttopay.net/news/tpost/ydv4lxmn61-itch-io-kak-kupit-bez-ogranichenii" class="text-blue-500 hover:underline">Инструкция</a></td><td align="center" class="px-6 py-4">🚫</td><td align="center" class="px-6 py-4">🚫</td><td align="center" class="px-6 py-4">🚫</td><td align="center" class="px-6 py-4">🚫</td><td align="center" class="px-6 py-4">🚫</td></tr>
+                            <tr class="bg-white border-b"><td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap text-left">Iherb<br><a href="https://wanttopay.net/tpost/bzn3ornvt1-kak-zakazat-s-aiherb-dlya-dostavki-v-ros" class="text-blue-500 hover:underline">Инструкция</a></td><td align="center" class="px-6 py-4">➖</td><td align="center" class="px-6 py-4">➖</td><td align="center" class="px-6 py-4">➖</td><td align="center" class="px-6 py-4">➖</td><td align="center" class="px-6 py-4">➖</td></tr>
+                            <tr class="bg-white border-b"><td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap text-left">Intellius</td><td align="center" class="px-6 py-4">✴️</td><td align="center" class="px-6 py-4">✴️</td><td align="center" class="px-6 py-4">➖</td><td align="center" class="px-6 py-4">➖</td><td align="center" class="px-6 py-4">➖</td></tr>
+                            <tr class="bg-white border-b"><td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap text-left">Ionos</td><td align="center" class="px-6 py-4">✴️</td><td align="center" class="px-6 py-4">✴️</td><td align="center" class="px-6 py-4">➖</td><td align="center" class="px-6 py-4">➖</td><td align="center" class="px-6 py-4">➖</td></tr>
+                            <tr class="bg-white border-b"><td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap text-left">Jetbrains.com(MEX only)<br><a href="https://wanttopay.net/news/tpost/z4ztoi12g1-jetbrains-kupit-litsenziyu-v-rossii" class="text-blue-500 hover:underline">Инструкция</a></td><td align="center" class="px-6 py-4">✅</td><td align="center" class="px-6 py-4">✅</td><td align="center" class="px-6 py-4">➖</td><td align="center" class="px-6 py-4">➖</td><td align="center" class="px-6 py-4">➖</td></tr>
+                            <tr class="bg-white border-b"><td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap text-left">Kling AI</td><td align="center" class="px-6 py-4">✅</td><td align="center" class="px-6 py-4">✅</td><td align="center" class="px-6 py-4">➖</td><td align="center" class="px-6 py-4">➖</td><td align="center" class="px-6 py-4">✅</td></tr>
+                            <tr class="bg-white border-b"><td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap text-left">Krea AI<br><a href="https://wanttopay.net/news/tpost/m451ymlti1-neiroset-krea-ai-kupit-podpisku-v-2025-g" class="text-blue-500 hover:underline">Инструкция</a></td><td align="center" class="px-6 py-4">✅</td><td align="center" class="px-6 py-4">✅</td><td align="center" class="px-6 py-4">➖</td><td align="center" class="px-6 py-4">➖</td><td align="center" class="px-6 py-4">✅</td></tr>
+                            <tr class="bg-white border-b"><td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap text-left">Leonardo AI<br><a href="https://wanttopay.net/news/tpost/8t7lyuzuv1-leonardo-ai-kupit-podpisku-iz-rossii" class="text-blue-500 hover:underline">Инструкция</a></td><td align="center" class="px-6 py-4">✅</td><td align="center" class="px-6 py-4">✅</td><td align="center" class="px-6 py-4">✅</td><td align="center" class="px-6 py-4">✅</td><td align="center" class="px-6 py-4">✅</td></tr>
+                            <tr class="bg-white border-b"><td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap text-left">Manychat</td><td align="center" class="px-6 py-4">✅</td><td align="center" class="px-6 py-4">✅</td><td align="center" class="px-6 py-4">➖</td><td align="center" class="px-6 py-4">➖</td><td align="center" class="px-6 py-4">➖</td></tr>
+                            <tr class="bg-white border-b"><td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap text-left">Metapayads</td><td align="center" class="px-6 py-4">✴️</td><td align="center" class="px-6 py-4">✴️</td><td align="center" class="px-6 py-4">➖</td><td align="center" class="px-6 py-4">➖</td><td align="center" class="px-6 py-4">➖</td></tr>
+                            <tr class="bg-white border-b"><td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap text-left">Microsoft</td><td align="center" class="px-6 py-4">🚫</td><td align="center" class="px-6 py-4">🚫</td><td align="center" class="px-6 py-4">🚫</td><td align="center" class="px-6 py-4">🚫</td><td align="center" class="px-6 py-4">➖</td></tr>
+                            <tr class="bg-white border-b"><td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap text-left">Microsoft advertising</td><td align="center" class="px-6 py-4">✴️</td><td align="center" class="px-6 py-4">✴️</td><td align="center" class="px-6 py-4">➖</td><td align="center" class="px-6 py-4">➖</td><td align="center" class="px-6 py-4">➖</td></tr>
+                            <tr class="bg-white border-b"><td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap text-left">Midjourney<br><a href="https://wanttopay.net/news/tpost/o61um7oxv1-oplatit-midzhorni-v-2025-poshagovaya-ins" class="text-blue-500 hover:underline">Инструкция</a></td><td align="center" class="px-6 py-4">✅</td><td align="center" class="px-6 py-4">✅</td><td align="center" class="px-6 py-4">🚫</td><td align="center" class="px-6 py-4">🚫</td><td align="center" class="px-6 py-4">✅</td></tr>
+                            <tr class="bg-white border-b"><td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap text-left">Moloco</td><td align="center" class="px-6 py-4">✴️</td><td align="center" class="px-6 py-4">✴️</td><td align="center" class="px-6 py-4">➖</td><td align="center" class="px-6 py-4">➖</td><td align="center" class="px-6 py-4">➖</td></tr>
+                            <tr class="bg-white border-b"><td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap text-left">Mongodbcloud</td><td align="center" class="px-6 py-4">✴️</td><td align="center" class="px-6 py-4">✴️</td><td align="center" class="px-6 py-4">➖</td><td align="center" class="px-6 py-4">➖</td><td align="center" class="px-6 py-4">➖</td></tr>
+                            <tr class="bg-white border-b"><td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap text-left">Name cheap</td><td align="center" class="px-6 py-4">✴️</td><td align="center" class="px-6 py-4">✴️</td><td align="center" class="px-6 py-4">➖</td><td align="center" class="px-6 py-4">➖</td><td align="center" class="px-6 py-4">➖</td></tr>
+                            <tr class="bg-white border-b"><td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap text-left">Namesilo</td><td align="center" class="px-6 py-4">✴️</td><td align="center" class="px-6 py-4">✴️</td><td align="center" class="px-6 py-4">➖</td><td align="center" class="px-6 py-4">➖</td><td align="center" class="px-6 py-4">➖</td></tr>
+                            <tr class="bg-white border-b"><td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap text-left">Netflix<br><a href="https://wanttopay.net/news/tpost/dls5xzxmk1-kak-oplatit-podpisku-netflix-iz-rossii" class="text-blue-500 hover:underline">Инструкция</a></td><td align="center" class="px-6 py-4">🚫</td><td align="center" class="px-6 py-4">🚫</td><td align="center" class="px-6 py-4">🚫</td><td align="center" class="px-6 py-4">🚫</td><td align="center" class="px-6 py-4">➖</td></tr>
+                            <tr class="bg-white border-b"><td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap text-left">Nintendo (Eshop)</td><td align="center" class="px-6 py-4">🚫</td><td align="center" class="px-6 py-4">🚫</td><td align="center" class="px-6 py-4">🚫</td><td align="center" class="px-6 py-4">🚫</td><td align="center" class="px-6 py-4">🚫</td></tr>
+                            <tr class="bg-white border-b"><td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap text-left"><p>Onlyfans </p><p><a href="instrukcii/kak-oplachivat-onlyfans-virtualnoi-kartoi-visa-prepaid" class="text-blue-500 hover:underline">Инструкция</a></p></td><td align="center" class="px-6 py-4">✅</td><td align="center" class="px-6 py-4">✅</td><td align="center" class="px-6 py-4">🚫</td><td align="center" class="px-6 py-4">🚫</td><td align="center" class="px-6 py-4">➖</td></tr>
+                            <tr class="bg-white border-b"><td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap text-left"><p>OpenAI</p><p><a href="instrukcii/kak-oplatit-tokeny-openai-predoplachennoi-kartoi-visa-prepaid" class="text-blue-500 hover:underline">Инструкция</a></p></td><td align="center" class="px-6 py-4">✅</td><td align="center" class="px-6 py-4">✅</td><td align="center" class="px-6 py-4">🚫</td><td align="center" class="px-6 py-4">🚫</td><td align="center" class="px-6 py-4">➖</td></tr>
+                            <tr class="bg-white border-b"><td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap text-left">Ovhcloud</td><td align="center" class="px-6 py-4">✴️</td><td align="center" class="px-6 py-4">✴️</td><td align="center" class="px-6 py-4">➖</td><td align="center" class="px-6 py-4">➖</td><td align="center" class="px-6 py-4">➖</td></tr>
+                            <tr class="bg-white border-b"><td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap text-left">PayPal<br>Only foreign verif. acc</td><td align="center" class="px-6 py-4">✅</td><td align="center" class="px-6 py-4">✅</td><td align="center" class="px-6 py-4">✅</td><td align="center" class="px-6 py-4">✅</td><td align="center" class="px-6 py-4">➖</td></tr>
+                            <tr class="bg-white border-b"><td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap text-left">PUBG Mobile PC<br><a href="https://wanttopay.net/news/tpost/o2ty0f1yn1-kak-zadonatit-v-pabg-v-rossii-2025-chere" class="text-blue-500 hover:underline">Инструкция</a></td><td align="center" class="px-6 py-4">✅</td><td align="center" class="px-6 py-4">✅</td><td align="center" class="px-6 py-4">🚫</td><td align="center" class="px-6 py-4">🚫</td><td align="center" class="px-6 py-4">➖</td></tr>
+                            <tr class="bg-white border-b"><td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap text-left">PUBG Mobile Android<br><a href="https://wanttopay.net/news/tpost/704nm4jy71-donati-v-pabg-v-2025-godu-kak-kupit-uc-i" class="text-blue-500 hover:underline">Инструкция</a></td><td align="center" class="px-6 py-4">✅</td><td align="center" class="px-6 py-4">✅</td><td align="center" class="px-6 py-4">🚫</td><td align="center" class="px-6 py-4">🚫</td><td align="center" class="px-6 py-4">➖</td></tr>
+                            <tr class="bg-white border-b"><td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap text-left">PUBG Mobile iOS<br><a href="https://wanttopay.net/news/tpost/7nrchun7c1-kak-sdelat-donati-v-pabg-na-ios-v-2025-g" class="text-blue-500 hover:underline">Инструкция</a></td><td align="center" class="px-6 py-4">✅</td><td align="center" class="px-6 py-4">✅</td><td align="center" class="px-6 py-4">🚫</td><td align="center" class="px-6 py-4">🚫</td><td align="center" class="px-6 py-4">➖</td></tr>
+                            <tr class="bg-white border-b"><td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap text-left">Patreon<br><a href="https://wanttopay.net/news/tpost/eg0b0lzan1-kak-oplatit-patreon-2025-patreon-v-rossi" class="text-blue-500 hover:underline">Инструкция</a></td><td align="center" class="px-6 py-4">✅</td><td align="center" class="px-6 py-4">✅</td><td align="center" class="px-6 py-4">✅</td><td align="center" class="px-6 py-4">✅</td><td align="center" class="px-6 py-4">➖</td></tr>
+                            <tr class="bg-white border-b"><td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap text-left">PlayStation(USA)</td><td align="center" class="px-6 py-4">✅</td><td align="center" class="px-6 py-4">✅</td><td align="center" class="px-6 py-4">🚫</td><td align="center" class="px-6 py-4">🚫</td><td align="center" class="px-6 py-4">➖</td></tr>
+                            <tr class="bg-white border-b"><td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap text-left">Payment keywordtool</td><td align="center" class="px-6 py-4">✴️</td><td align="center" class="px-6 py-4">✴️</td><td align="center" class="px-6 py-4">➖</td><td align="center" class="px-6 py-4">➖</td><td align="center" class="px-6 py-4">➖</td></tr>
+                            <tr class="bg-white border-b"><td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap text-left">Peoplelooker</td><td align="center" class="px-6 py-4">✴️</td><td align="center" class="px-6 py-4">✴️</td><td align="center" class="px-6 py-4">➖</td><td align="center" class="px-6 py-4">➖</td><td align="center" class="px-6 py-4">➖</td></tr>
+                            <tr class="bg-white border-b"><td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap text-left">Pinterest*ads</td><td align="center" class="px-6 py-4">✴️</td><td align="center" class="px-6 py-4">✴️</td><td align="center" class="px-6 py-4">➖</td><td align="center" class="px-6 py-4">➖</td><td align="center" class="px-6 py-4">➖</td></tr>
+                            <tr class="bg-white border-b"><td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap text-left">Roblox     <br><a href="https://wanttopay.net/news/tpost/td0areyph1-kak-kupit-robuksi-iz-rossii-donati-v-rob" class="text-blue-500 hover:underline">Инструкция</a></td><td align="center" class="px-6 py-4">✅</td><td align="center" class="px-6 py-4">✅</td><td align="center" class="px-6 py-4">🚫</td><td align="center" class="px-6 py-4">🚫</td><td align="center" class="px-6 py-4">🚫</td></tr>
+                            <tr class="bg-white border-b"><td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap text-left">Reddit*ads</td><td align="center" class="px-6 py-4">✴️</td><td align="center" class="px-6 py-4">✴️</td><td align="center" class="px-6 py-4">➖</td><td align="center" class="px-6 py-4">➖</td><td align="center" class="px-6 py-4">➖</td></tr>
+                            <tr class="bg-white border-b"><td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap text-left">Relume.io</td><td align="center" class="px-6 py-4">✴️</td><td align="center" class="px-6 py-4">✴️</td><td align="center" class="px-6 py-4">➖</td><td align="center" class="px-6 py-4">➖</td><td align="center" class="px-6 py-4">➖</td></tr>
+                            <tr class="bg-white border-b"><td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap text-left">Runway<br><a href="https://wanttopay.net/news/tpost/ki1g507el1-kak-oplatit-runway-onlain-iz-rossii" class="text-blue-500 hover:underline">Инструкция</a></td><td align="center" class="px-6 py-4">✅</td><td align="center" class="px-6 py-4">✅</td><td align="center" class="px-6 py-4">✅</td><td align="center" class="px-6 py-4">✅</td><td align="center" class="px-6 py-4">➖</td></tr>
+                            <tr class="bg-white border-b"><td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap text-left">Select Media</td><td align="center" class="px-6 py-4">✴️</td><td align="center" class="px-6 py-4">✴️</td><td align="center" class="px-6 py-4">➖</td><td align="center" class="px-6 py-4">➖</td><td align="center" class="px-6 py-4">➖</td></tr>
+                            <tr class="bg-white border-b"><td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap text-left">Steam</td><td align="center" class="px-6 py-4">🚫</td><td align="center" class="px-6 py-4">🚫</td><td align="center" class="px-6 py-4">🚫</td><td align="center" class="px-6 py-4">🚫</td><td align="center" class="px-6 py-4">➖</td></tr>
+                            <tr class="bg-white border-b"><td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap text-left">Searchads/apple</td><td align="center" class="px-6 py-4">✴️</td><td align="center" class="px-6 py-4">✴️</td><td align="center" class="px-6 py-4">➖</td><td align="center" class="px-6 py-4">➖</td><td align="center" class="px-6 py-4">➖</td></tr>
+                            <tr class="bg-white border-b"><td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap text-left">Similarweb</td><td align="center" class="px-6 py-4">✴️</td><td align="center" class="px-6 py-4">✴️</td><td align="center" class="px-6 py-4">➖</td><td align="center" class="px-6 py-4">➖</td><td align="center" class="px-6 py-4">➖</td></tr>
+                            <tr class="bg-white border-b"><td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap text-left">Snap inc</td><td align="center" class="px-6 py-4">✴️</td><td align="center" class="px-6 py-4">✴️</td><td align="center" class="px-6 py-4">➖</td><td align="center" class="px-6 py-4">➖</td><td align="center" class="px-6 py-4">➖</td></tr>
+                            <tr class="bg-white border-b"><td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap text-left">Spotify Premium (MEX)</td><td align="center" class="px-6 py-4">✅</td><td align="center" class="px-6 py-4">✅</td><td align="center" class="px-6 py-4">🚫</td><td align="center" class="px-6 py-4">🚫</td><td align="center" class="px-6 py-4">➖</td></tr>
+                            <tr class="bg-white border-b"><td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap text-left">Subscribestar<br><a href="https://wanttopay.net/news/tpost/3pgte7jgc1-kak-oplatit-subscribestar-iz-rossii" class="text-blue-500 hover:underline">Инструкция</a></td><td align="center" class="px-6 py-4">➖</td><td align="center" class="px-6 py-4">➖</td><td align="center" class="px-6 py-4">🚫</td><td align="center" class="px-6 py-4">🚫</td><td align="center" class="px-6 py-4">➖</td></tr>
+                            <tr class="bg-white border-b"><td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap text-left">Spline</td><td align="center" class="px-6 py-4">✅</td><td align="center" class="px-6 py-4">✅</td><td align="center" class="px-6 py-4">➖</td><td align="center" class="px-6 py-4">➖</td><td align="center" class="px-6 py-4">➖</td></tr>
+                            <tr class="bg-white border-b"><td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap text-left">Suno<br><a href="https://wanttopay.net/news/tpost/fhhvuxj1x1-suno-kupit-iz-rossii-v-2025" class="text-blue-500 hover:underline">Инструкция</a></td><td align="center" class="px-6 py-4">✅</td><td align="center" class="px-6 py-4">✅</td><td align="center" class="px-6 py-4">✅</td><td align="center" class="px-6 py-4">✅</td><td align="center" class="px-6 py-4">➖</td></tr>
+                            <tr class="bg-white border-b"><td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap text-left">Sms-activate<br><a href="https://wanttopay.net/news/tpost/0rcy4e2cj1-kak-poluchit-kod-podtverzhdeniya-dlya-on" class="text-blue-500 hover:underline">Инструкция</a></td><td align="center" class="px-6 py-4">➖</td><td align="center" class="px-6 py-4">➖</td><td align="center" class="px-6 py-4">➖</td><td align="center" class="px-6 py-4">➖</td><td align="center" class="px-6 py-4">➖</td></tr>
+                            <tr class="bg-white border-b"><td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap text-left">Shutterstock<br><a href="https://wanttopay.net/news/tpost/5kernp0cc1-kak-oplatit-servis-fotobanka-shutterstoc" class="text-blue-500 hover:underline">Инструкция</a></td><td align="center" class="px-6 py-4">✅</td><td align="center" class="px-6 py-4">✅</td><td align="center" class="px-6 py-4">✅</td><td align="center" class="px-6 py-4">✅</td><td align="center" class="px-6 py-4">➖</td></tr>
+                            <tr class="bg-white border-b"><td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap text-left">Stable Diffusion<br><a href="https://wanttopay.net/news/tpost/jmibbb2lz1-kak-oplatit-neiroset-stable-diffusion-on" class="text-blue-500 hover:underline">Инструкция</a></td><td align="center" class="px-6 py-4">✅</td><td align="center" class="px-6 py-4">✅</td><td align="center" class="px-6 py-4">➖</td><td align="center" class="px-6 py-4">➖</td><td align="center" class="px-6 py-4">➖</td></tr>
+                            <tr class="bg-white border-b"><td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap text-left">Starlink<br><a href="https://wanttopay.net/news/tpost/it2j40eun1-kak-oplachivat-starlink-iz-rossii-2025" class="text-blue-500 hover:underline">Инструкция</a></td><td align="center" class="px-6 py-4">✅</td><td align="center" class="px-6 py-4">✅</td><td align="center" class="px-6 py-4">🚫</td><td align="center" class="px-6 py-4">🚫</td><td align="center" class="px-6 py-4">➖</td></tr>
+                            <tr class="bg-white border-b"><td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap text-left">Tidal<br><a href="https://wanttopay.net/news/tpost/3csvmmd371-oplata-servisa-tidal-iz-rossii" class="text-blue-500 hover:underline">Инструкция</a></td><td align="center" class="px-6 py-4">✅</td><td align="center" class="px-6 py-4">✅</td><td align="center" class="px-6 py-4">✅</td><td align="center" class="px-6 py-4">✅</td><td align="center" class="px-6 py-4">➖</td></tr>
+                            <tr class="bg-white border-b"><td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap text-left">Tiktok ads</td><td align="center" class="px-6 py-4">🚫</td><td align="center" class="px-6 py-4">🚫</td><td align="center" class="px-6 py-4">➖</td><td align="center" class="px-6 py-4">➖</td><td align="center" class="px-6 py-4">➖</td></tr>
+                            <tr class="bg-white border-b"><td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap text-left">Tiktok promote</td><td align="center" class="px-6 py-4">🚫</td><td align="center" class="px-6 py-4">🚫</td><td align="center" class="px-6 py-4">➖</td><td align="center" class="px-6 py-4">➖</td><td align="center" class="px-6 py-4">➖</td></tr>
+                            <tr class="bg-white border-b"><td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap text-left">Tik-Tok<br><a href="https://wanttopay.net/news/tpost/t5hk4b52f1-kak-kupit-moneti-v-tik-tok-v-2025-godu-s" class="text-blue-500 hover:underline">Инструкция</a></td><td align="center" class="px-6 py-4">✴️</td><td align="center" class="px-6 py-4">✴️</td><td align="center" class="px-6 py-4">➖</td><td align="center" class="px-6 py-4">➖</td><td align="center" class="px-6 py-4">➖</td></tr>
+                            <tr class="bg-white border-b"><td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap text-left">Twitter Ads</td><td align="center" class="px-6 py-4">✴️</td><td align="center" class="px-6 py-4">✴️</td><td align="center" class="px-6 py-4">➖</td><td align="center" class="px-6 py-4">➖</td><td align="center" class="px-6 py-4">➖</td></tr>
+                            <tr class="bg-white border-b"><td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap text-left">Twitter Premium (x.com)</td><td align="center" class="px-6 py-4">🚫</td><td align="center" class="px-6 py-4">🚫</td><td align="center" class="px-6 py-4">➖</td><td align="center" class="px-6 py-4">➖</td><td align="center" class="px-6 py-4">➖</td></tr>
+                            <tr class="bg-white border-b"><td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap text-left">Tradingview<br>(Активация пробного периода с карт Prepaid недоступна)<br><a href="https://wanttopay.net/news/tpost/dm2dgvzio1-kak-oplatit-treidingvyu-v-2025-godu-posh" class="text-blue-500 hover:underline">Инструкция</a></td><td align="center" class="px-6 py-4">✅</td><td align="center" class="px-6 py-4">✅</td><td align="center" class="px-6 py-4">✅</td><td align="center" class="px-6 py-4">✅</td><td align="center" class="px-6 py-4">➖</td></tr>
+                            <tr class="bg-white border-b"><td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap text-left">Uber</td><td align="center" class="px-6 py-4">➖</td><td align="center" class="px-6 py-4">➖</td><td align="center" class="px-6 py-4">🚫</td><td align="center" class="px-6 py-4">🚫</td><td align="center" class="px-6 py-4">➖</td></tr>
+                            <tr class="bg-white border-b"><td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap text-left">Udemy<br><a href="https://wanttopay.net/news/tpost/xib8ghokm1-kak-oplatit-kursi-udemy-iz-rossii-2025" class="text-blue-500 hover:underline">Инструкция</a></td><td align="center" class="px-6 py-4">✅</td><td align="center" class="px-6 py-4">✅</td><td align="center" class="px-6 py-4">✅</td><td align="center" class="px-6 py-4">✅</td><td align="center" class="px-6 py-4">➖</td></tr>
+                            <tr class="bg-white border-b"><td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap text-left">Unity Asset Store (Mex. Only)</td><td align="center" class="px-6 py-4">✅</td><td align="center" class="px-6 py-4">✅</td><td align="center" class="px-6 py-4"></td><td align="center" class="px-6 py-4">➖</td><td align="center" class="px-6 py-4">➖</td></tr>
+                            <tr class="bg-white border-b"><td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap text-left">Web Services aws emea</td><td align="center" class="px-6 py-4">✴️</td><td align="center" class="px-6 py-4">✴️</td><td align="center" class="px-6 py-4">➖</td><td align="center" class="px-6 py-4">➖</td><td align="center" class="px-6 py-4">➖</td></tr>
+                            <tr class="bg-white border-b"><td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap text-left">Webshare.io</td><td align="center" class="px-6 py-4">✅</td><td align="center" class="px-6 py-4">✅</td><td align="center" class="px-6 py-4">➖</td><td align="center" class="px-6 py-4">➖</td><td align="center" class="px-6 py-4">➖</td></tr>
+                            <tr class="bg-white border-b"><td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap text-left">Whitepages</td><td align="center" class="px-6 py-4">✴️</td><td align="center" class="px-6 py-4">✴️</td><td align="center" class="px-6 py-4">➖</td><td align="center" class="px-6 py-4">➖</td><td align="center" class="px-6 py-4">➖</td></tr>
+                            <tr class="bg-white border-b"><td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap text-left">Whoop.com</td><td align="center" class="px-6 py-4">✴️</td><td align="center" class="px-6 py-4">✴️</td><td align="center" class="px-6 py-4">➖</td><td align="center" class="px-6 py-4">🚫</td><td align="center" class="px-6 py-4">➖</td></tr>
+                            <tr class="bg-white border-b"><td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap text-left">Xbox</td><td align="center" class="px-6 py-4">🚫</td><td align="center" class="px-6 py-4">🚫</td><td align="center" class="px-6 py-4">🚫</td><td align="center" class="px-6 py-4">🚫</td><td align="center" class="px-6 py-4">➖</td></tr>
+                            <tr class="bg-white border-b"><td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap text-left"><p>Youtube Premium </p><p><a href="https://wanttopay.net/news/tpost/yelkuog9y1-oplata-podpiski-youtube-premium-v-rossii" class="text-blue-500 hover:underline">Инструкция</a></p></td><td align="center" class="px-6 py-4">✅</td><td align="center" class="px-6 py-4">✅</td><td align="center" class="px-6 py-4">✅</td><td align="center" class="px-6 py-4">✅</td><td align="center" class="px-6 py-4">✅</td></tr>
+                            <tr class="bg-white border-b"><td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap text-left">Zoom<br><a href="https://wanttopay.net/news/tpost/65xorntz21-oplata-podpiski-zoom-iz-rossii" class="text-blue-500 hover:underline">Инструкция</a> </td><td align="center" class="px-6 py-4">✴️</td><td align="center" class="px-6 py-4">✴️</td><td align="center" class="px-6 py-4">➖</td><td align="center" class="px-6 py-4">➖</td><td align="center" class="px-6 py-4">➖</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="bg-blue-50 border-l-4 border-blue-500 text-blue-700 p-4 rounded-r-lg mt-8 mb-6 max-w-3xl mx-auto">
+                    <p class="font-bold">Примечание:</p>
+                    <p class="mt-2 text-sm">Для успешного проведения платежей (под маркировкой ✴️) для карт Visa Easy потребуется пройти процедуру KYC (идентификация клиента). С информацией по KYC вы можете ознакомиться в данной <a href="https://faq.wanttopay.net/hello/instrukcii/instrukciya-po-prokhozhdeniyu-kyc" target="_blank" class="text-blue-700 underline">статье</a></p>
+                </div>
+            </section>
+        </div>
+
+        <div id="tab-kyc" class="tab-content hidden">
+            <section id="kyc-info" class="scroll-mt-20 max-w-3xl mx-auto">
+                <h2 class="text-3xl font-bold text-center mb-12">Информация о KYC</h2>
+
+                <p class="text-gray-700 mb-6">
+                    KYC (Know Your Customer) — это процесс проверки личности клиента, используемый банками, финансовыми сервисами и криптобиржами для предотвращения мошенничества и отмывания денег. Он включает проверку документов, биометрическую идентификацию и оценку рисков.
+                </p>
+
+                <div class="bg-blue-50 border-l-4 border-blue-500 text-blue-700 p-4 rounded-lg mb-6">
+                    <p class="font-bold">Подсказка</p>
+                    <p class="mt-2 text-sm">Если вы гражданин России, лучше всего подойдёт загранпаспорт — система обрабатывает такие документы быстрее и с меньшим количеством ошибок.</p>
+                </div>
+
+                <p class="text-gray-700 mb-8">
+                    В Wanttopay процедура KYC проводится через международный сервис <strong>Sumsub</strong> — одного из лидеров рынка верификационных решений, которому доверяют банки, биржи и финтех-компании по всему миру.
+                </p>
+
+                <h3 class="text-2xl font-bold mt-8 mb-4">Зачем нужно проходить верификацию?</h3>
+                <p class="text-gray-700 mb-6">
+                    Прохождение верификации (KYC) в Wanttopay требуется в двух основных случаях:
+                </p>
+                <ol class="list-decimal list-inside space-y-2 text-gray-700 mb-6">
+                    <li>Для оформления карты Mastercard Pro, Mastercard Smart с бесконтактной оплатой (NFC) — верификация обязательна.</li>
+                    <li>Для оплаты определенных сервисов, которые требуют прохождения верификации, при использовании карт Visa Prepaid, Visa Easy.</li>
+                </ol>
+
+                <div class="bg-blue-50 border-l-4 border-blue-500 text-blue-700 p-4 rounded-lg mb-8">
+                     <p class="font-bold">Подсказка</p>
+                    <p class="mt-2 text-sm">Сервисы, которые требуют прохождения верификации при использовании карты Visa Prepaid: <br> Amazon, Beenverified, Booking.com, CC Bill, Cloudflare, DigitalOcean, Facebook, Fansly, Google AdSense, Zoom и другие.
+                    <br><br>
+                    Во всех остальных случаях карта Visa Prepaid может использоваться без прохождения верификации.</p>
+                </div>
+                
+                <h3 class="text-2xl font-bold mt-8 mb-4">Как пройти верификацию в Wanttopay</h3>
+                 <p class="text-gray-700 mb-6">
+                    Пройти верификацию можно прямо внутри мини-приложения Wanttopay в Telegram:
+                </p>
+                <ol class="list-decimal list-inside space-y-2 text-gray-700 mb-6">
+                    <li>Откройте мини-приложение <a href="https://t.me/WanttopayBot" target="_blank" class="text-blue-500 hover:underline">@WanttopayBot</a></li>
+                    <li>Перейдите в раздел «Настройки»</li>
+                    <li>Нажмите «Пройти верификацию»</li>
+                    <li>В открывшемся окне, напротив пункта «Подтвердите личность», расположен значок вопроса (?). Если нажать на него, откроется <a href="https://faq.wanttopay.net/hello/instrukcii/instrukciya-po-prokhozhdeniyu-kyc" target="_blank" class="text-blue-500 hover:underline">инструкция по прохождению KYC</a> на нашем информационном портале.</li>
+                    <li>Нажмите «Начать», введите свои данные, затем следуйте инструкциям Sumsub — загрузите документы и сделайте фото для подтверждения личности.</li>
+                </ol>
+
+                <div class="bg-blue-50 border-l-4 border-blue-500 text-blue-700 p-4 rounded-lg mb-6">
+                    <p class="font-bold">Важно</p>
+                    <p class="mt-2 text-sm">Прохождение верификации не требуется по умолчанию. Вы можете оформлять карты с тарифом Prepaid и пользоваться сервисом без предоставления документов, если KYC не требуется для конкретного сервиса (например, Amazon, Cloudflare и др.)</p>
+                </div>
+                
+                <div class="mt-8 p-4 bg-gray-100 rounded-lg text-center">
+                    <a href="https://faq.wanttopay.net/hello/instrukcii/instrukciya-po-prokhozhdeniyu-kyc-1" target="_blank" class="text-blue-500 hover:underline font-semibold">Подробная инструкция по прохождению KYC</a>
+                </div>
+
+            </section>
+        </div>
+        
+        <div id="tab-faq" class="tab-content hidden">
+            <section id="faq" class="scroll-mt-20 max-w-3xl mx-auto">
                 <h2 class="text-3xl font-bold text-center mb-12">Часто задаваемые вопросы</h2>
-                 <div class="max-w-3xl mx-auto">
-                    <div class="accordion-item bg-white rounded-lg shadow mb-4">
-                        <button class="accordion-header w-full text-left p-6 font-semibold text-lg flex justify-between items-center">
-                            Насколько безопасно использовать этого бота?
-                            <span class="transform transition-transform duration-300">▼</span>
-                        </button>
-                        <div class="accordion-content px-6 pb-6">
-                            <p class="text-gray-600">Бот выступает как посредник для генерации счетов. Средства поступают напрямую на ваш личный криптокошелек, который вы подключаете. Бот не хранит ваши приватные ключи. Тем не менее, как и при работе с любой криптовалютой, важно соблюдать базовые меры безопасности: не делитесь данными своего кошелька и используйте надежные пароли.</p>
-                        </div>
+
+                <div class="mb-8">
+                    <h3 class="text-xl font-semibold mb-2">1. Как работает виртуальная карта?</h3>
+                    <p class="text-gray-700">Виртуальные карты ничем не отличаются от обычных карт, за исключением того, что в них нет физического пластика. Вводя данные виртуальной карты там, где вы обычно вводите данные своей кредитной или дебетовой карты, вы можете легко совершать покупки.</p>
+                </div>
+
+                <div class="mb-8">
+                    <h3 class="text-xl font-semibold mb-2">2. Где я могу совершать покупки и оплату?</h3>
+                    <p class="text-gray-700">Виртуальная карта позволяет вам совершать покупки/оплачивать товары везде, где принимаются онлайн-карты, в первую очередь это доллар США и других валютах, кроме Российского рубля. По этим причинам при оплате услуг и товаров необходимо использование программы для смены местоположения.</p>
+                </div>
+
+                <div class="mb-8">
+                    <h3 class="text-xl font-semibold mb-2">3. Могу ли я пополнять баланс?</h3>
+                    <p class="text-gray-700 mb-2"><strong>Да.</strong> Если это пополняемая виртуальная карта с тарифами Easy/Pro. Вы легко сможете пополнять баланс по установленному курсу если у вас карта с тарифом Pro, с учетом всех комиссий и расходов обслуживаемых платежей. Или согласно установленному тарифу номиналов карт типа Easy с учётом скидок лояльности на повторное пополнение.</p>
+                    <p class="text-gray-700"><strong>Нет.</strong> Если это виртуальная предоплаченная карта. Баланс такой карты пополнить нельзя.</p>
+                </div>
+
+                 <div class="mb-8">
+                    <h3 class="text-xl font-semibold mb-2">4. Поддерживают ли карты 3D-Secure?</h3>
+                    <p class="text-gray-700 mb-2"><strong>Да.</strong> Если это виртуальная предоплаченная карта Visa, верификация платежа происходит автоматически и вам не требуется вводить код. Также вы можете смотреть списание контрольной суммы в разделе "Транзакции" из личного кабинета, это когда у вас сервис списывает тестовую сумму.</p>
+                    <p class="text-gray-700"><strong>Нет.</strong> Если это виртуальная предоплаченная карта Mastercard.</p>
+                </div>
+
+                 <div class="mb-8">
+                    <h3 class="text-xl font-semibold mb-2">5. Срок действия карт?</h3>
+                    <ul class="list-none text-gray-700 space-y-1">
+                        <li>Easy - 36 месяцев;</li>
+                        <li>Smart - 24 месяца;</li>
+                        <li>Pro - 24 месяца;</li>
+                        <li>Prepaid - 60 дней;</li>
+                        <li>Gift - одноразовая.</li>
+                    </ul>
+                    <div class="mt-4 bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 rounded-r-lg">
+                        <p>⚠️ <em>По завершению срока действия предоплаченной виртуальной карты, остаток средств сгорает.</em></p>
                     </div>
-                    <div class="accordion-item bg-white rounded-lg shadow mb-4">
-                        <button class="accordion-header w-full text-left p-6 font-semibold text-lg flex justify-between items-center">
-                            Какие криптовалюты и валюты поддерживаются?
-                            <span class="transform transition-transform duration-300">▼</span>
-                        </button>
-                        <div class="accordion-content px-6 pb-6">
-                            <p class="text-gray-600">Основной фокус бота — на криптовалютах. Чаще всего поддерживаются TON, а также стейблкоины, такие как USDT, USDC, BUSD. Список поддерживаемых активов может меняться, актуальную информацию всегда можно найти в самом боте при создании счета.</p>
-                        </div>
-                    </div>
-                    <div class="accordion-item bg-white rounded-lg shadow mb-4">
-                        <button class="accordion-header w-full text-left p-6 font-semibold text-lg flex justify-between items-center">
-                            Как быстро деньги поступят на мой кошелек?
-                            <span class="transform transition-transform duration-300">▼</span>
-                        </button>
-                        <div class="accordion-content px-6 pb-6">
-                            <p class="text-gray-600">После того как клиент совершил оплату, средства зачисляются на внутренний баланс в боте. Скорость зачисления зависит от скорости блокчейн-сети. Вывод с внутреннего баланса на ваш привязанный кошелек обычно происходит быстро, но может занимать от нескольких минут до часа в зависимости от загруженности сети.</p>
-                        </div>
-                    </div>
+                </div>
+
+                <div class="mb-8">
+                    <h3 class="text-xl font-semibold mb-2">6. Какое имя указывать при оплате картой?</h3>
+                    <p class="text-gray-700">Виртуальные карты не требуют прохождения KYC (Know Your Costumer), то есть являются безымянными, но так как заполнение имени при оплате является обязательным, вы можете указывать своё имя при оплате. <a href="https://faq.wanttopay.net/hello/obshie-voprosy/publish-your-docs" target="_blank" class="text-blue-500 hover:underline">Подробнее</a></p>
+                </div>
+
+                <div class="mb-8">
+                    <h3 class="text-xl font-semibold mb-2">7. Какой указывать биллинг адрес?</h3>
+                    <p class="text-gray-700">Биллинг адрес придёт вместе с данными вашей карты в чат-боте. Используйте их при заполнении данных биллинг адреса.</p>
+                </div>
+
+                <div class="mb-8">
+                    <h3 class="text-xl font-semibold mb-2">8. Возможен возврат средств если карта не работает?</h3>
+                    <p class="text-gray-700">Читайте условия использования и возврата виртуальных карт: <a href="https://faq.wanttopay.net/hello/usloviya-ispolzovaniya-kart-wanttopay/tarif-easy" target="_blank" class="text-blue-500 hover:underline">Тариф Easy</a>, <a href="https://faq.wanttopay.net/hello/usloviya-ispolzovaniya-kart-wanttopay/tarif-pro" target="_blank" class="text-blue-500 hover:underline">Тариф Pro</a> и <a href="https://faq.wanttopay.net/hello/usloviya-ispolzovaniya-kart-wanttopay/tarif-prepaid" target="_blank" class="text-blue-500 hover:underline">Тариф Prepaid</a>.</p>
                 </div>
             </section>
         </div>
@@ -237,7 +665,7 @@
                         </div>
                         <div id="reviews-container" class="space-y-4">
                             <div class="review-card p-6 bg-white rounded-lg shadow" data-category="positive">
-                                <p class="text-gray-700">"Очень удобно принимать оплату за фриланс-заказы. Комиссия 0.9% — просто подарок по сравнению с другими сервисами. Все внутри телеги, никуда переходить не надо."</p>
+                                <p class="text-gray-700">"Очень удобно принимать оплату за фриланс-заказы. Комиссия 0.7% — просто подарок по сравнению с другими сервисами. Все внутри телеги, никуда переходить не надо."</p>
                                 <p class="text-right text-sm text-gray-500 mt-4">- Пользователь с IT-форума</p>
                             </div>
                             <div class="review-card p-6 bg-white rounded-lg shadow" data-category="positive">
@@ -268,42 +696,6 @@
 
     <script>
         let chartsCreated = {};
-
-        function createFeesChart() {
-            if (chartsCreated.fees) return;
-            const feesCtx = document.getElementById('feesChart').getContext('2d');
-            new Chart(feesCtx, {
-                type: 'doughnut',
-                data: {
-                    labels: ['Сумма для вас', 'Комиссия бота'],
-                    datasets: [{
-                        label: 'Распределение платежа',
-                        data: [99.1, 0.9],
-                        backgroundColor: ['#3b82f6', '#e5e7eb'],
-                        borderColor: ['#ffffff'],
-                        borderWidth: 4
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            position: 'bottom',
-                        },
-                        tooltip: {
-                            callbacks: {
-                                label: function(context) {
-                                    return `${context.label}: ${context.raw}%`;
-                                }
-                            }
-                        }
-                    },
-                    cutout: '70%'
-                }
-            });
-            chartsCreated.fees = true;
-        }
 
         function createReviewsChart() {
             if (chartsCreated.reviews) return;
@@ -363,9 +755,7 @@
                     }
                 });
 
-                if (tabId === 'overview') {
-                    createFeesChart();
-                } else if (tabId === 'reviews') {
+                if (tabId === 'reviews') {
                     createReviewsChart();
                 }
             }
@@ -376,8 +766,6 @@
                     mobileMenu.classList.add('hidden');
                 });
             });
-
-            createFeesChart();
 
             const stepDetailsContent = {
                 '1': 'Вы заводите в боте свой "проект" — это как папка для ваших счетов. Это позволяет отделить рабочие платежи от личных и управлять ими в одном месте.',
@@ -407,18 +795,13 @@
             style.innerHTML = `@keyframes fadeIn { 0% { opacity: 0; transform: translateY(10px); } 100% { opacity: 1; transform: translateY(0); } } .animate-fade-in { animation: fadeIn 0.5s; }`;
             document.head.appendChild(style);
             
-            document.querySelectorAll('.accordion-header').forEach(button => {
-                button.addEventListener('click', () => {
-                    const content = button.nextElementSibling;
-                    const icon = button.querySelector('span');
-                    
-                    button.parentElement.classList.toggle('open');
-                    icon.classList.toggle('rotate-180');
-
-                    if (content.style.maxHeight) {
-                        content.style.maxHeight = null;
+            document.querySelectorAll('details').forEach(details => {
+                details.addEventListener('toggle', () => {
+                    const icon = details.querySelector('summary span');
+                    if (details.open) {
+                        icon.classList.add('rotate-180');
                     } else {
-                        content.style.maxHeight = content.scrollHeight + "px";
+                        icon.classList.remove('rotate-180');
                     }
                 });
             });
@@ -453,3 +836,4 @@
     </script>
 </body>
 </html>
+
